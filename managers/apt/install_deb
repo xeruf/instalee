@@ -1,0 +1,9 @@
+#!/bin/sh
+loc="/tmp/install.deb" 
+case $1 in
+        (http*) sudo wget -O "$loc" $1 ;;
+        (*) loc="$1"  ;;
+esac
+sudo dpkg -i "$loc"
+sudo apt -f install
+sudo rm -f "$loc"

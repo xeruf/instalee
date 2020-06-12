@@ -1,0 +1,38 @@
+#!/bin/sh
+
+home="${XDG_CONFIG_HOME:-$HOME/.config}/instalee"
+
+underline() { echo "[4m$1[0m"; }
+
+get() {
+	result=$(cat "$home/sources" | while read source
+	do find "$home/packages/$1" -name "$source*" 2>/dev/null
+	done)
+	test "$result" || (echo "No source for package '$1'" >>/dev/stderr && exit 1)
+	echo "$result"
+}
+
+getcontent() {
+	case "$(file "$1")" in
+		*executable*) $1;;
+		*) cat "$1";;
+	esac
+}
+
+case $1 in
+	-a)
+		dir="$home/packages/$2"
+		mkdir -p "$dir"
+		echo "$4">"$dir/$3"
+	*)
+		get "$1" | while read pkg; do
+			underline "$pkg"
+			name="$(basename $pkg)"
+			base="${name%_*}"
+			ext="${name##$base}"
+			mgr="$home/managers/$base"
+			args="$(getcontent "$pkg")"
+			(test "$base" = "manual" && echo "$args") || (install="$(find "$mgr" -name "install$ext" | head -1)" && echo $install $args && $install $args)
+		done
+esac
+

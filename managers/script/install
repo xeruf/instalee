@@ -1,0 +1,5 @@
+#!/bin/sh
+location="/usr/local/bin/$(basename $1)"
+curl "$1" | sudo tee "$location" > /dev/null
+sudo chmod +x "$location"
+echo "Installed to $location"

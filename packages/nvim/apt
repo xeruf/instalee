@@ -1,0 +1,2 @@
+apt install neovim
+sudo update-alternatives --install $(which editor) editor /usr/bin/nvim 50
