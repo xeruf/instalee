@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+cd /tmp
+git clone https://github.com/nonpop/xkblayout-state
+cd xkblayout-state
+make
+sudo mv -v xkblayout-state /usr/local/bin
