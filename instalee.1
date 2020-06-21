@@ -1,25 +1,67 @@
 .\" Manpage for instalee.
 .\" Contact xerusx@pm.me to correct errors or typos.
 
-.TH man 1 "06 May 2020" "0.1" "nuseradd man page"
+.TH man 1 "06 May 2020" "0.1" "instalee man page"
 
 .SH NAME
 
-nuseradd \- create a new LDAP user 
+instalee - Unix-style universal package management wrapper
 
 .SH SYNOPSIS
 
-nuseradd [USERNAME]
+.B instalee <packagename>
+.br
+.B instalee [-a] <packagename> <identifier> [<content>]
 
 .SH DESCRIPTION
 
-nuseradd is high level shell program for adding users to LDAP server.  On Debian, administrators should usually use nuseradd.debian(8) instead.
+instalee provides a generic interface for installing packages. Instead of knowing it all, it relies on the user configuring it to his needs while itself being as dumb as possible.
+
+Its configuration resides in a folder defaulting to XDG_CONFIG_HOME/instalee, but may be tweaked by simply editing the beginning of the script. It contains a "managers" and "packages" directory and the "sources" file.
+
+The "managers" firectory contains a directory for each package manager, but in a very generic sense. Usually you will only need to create a directory for the package manager and then an "install" file that processes packages. The file should be executable. It will receive the "package" file result as input, or merely the package name in case that is empty.
+
+When using multiple different system, the "sources" file unfolds its purpose. It is simply a newline-separated list of the package managers available on the system, in order of preference. When installing a package, instalee uses the first match of a "sources" entry with a file in the package directory.
+
+The "packages" directory will contain the bulk of the information. It contains a directory for each package, which is then filled with files named according to the manager they represent. There are three options for this file, and the result determines the arguments to the "manager".
+.RS
+1. The file is empty. The package name is used as argument.
+.RE
+.RS
+2. The file is a textfile. The contents are used as argument.
+.RE
+.RS
+3. The file is executable. The file is executed and the output is used as argument.
+.RE
+
+There is also a special "manager" called "custom". A package file with that name will simply be executed without invoking a manager. A custom package file that is not executable constitutes an error.
 
 .SH OPTIONS
+.TP
+<packagename>
+The package to install. Corresponds to a directory in "packages".
+.TP
+-a
+Add a package, instead of installing it.
+.TP
+<identifier>
+Name of the packager for which this entry is meant, plus potential pre- and suffixes.
+.TP
+<content>
+Content of the file for the package to be added. If omitted, the file is opened with $EDITOR. Note that the parent directory is definitely created by then, but the file isn't.
 
-The nuseradd does not take any options. However, you can supply username.
+.SH PHILOSOPHY
 
-.SH SEE ALSO
+instalee is meant to closely follow the UNIX philosophy, by using directory structures and files instead of configuration files. The goal is to be as generic as possible, but there are still a few exceptions. If you have an idea how to incorporate them generically, I am all ears.
+.RS
+\(bu THe "custom" package file type, as explained above.
+.RE
+.RS
+\(bu A manager must not start with a number nor contain any underscores.
+.RE
+.RS
+\(bu tbd
+.RE
 
 .SH BUGS
 
