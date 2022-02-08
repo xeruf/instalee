@@ -1,31 +1,33 @@
 #!/bin/sh
 
-home="${XDG_CONFIG_HOME:-$HOME/.config}/instalee"
+home="${INSTALEE_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}/instalee}"
 
 underline() { echo "[4m$1[0m"; }
 
+# Get the content of a file or the output of its execution
+getcontent() { test -x "$1" && "$1" || cat "$1"; }
+
+# Get available package entries for given package
 get() {
-	result=$(cat "$home/sources" | while read source
-	do find "$home/packages/$1" -name "$source*" 2>/dev/null
-	done)
-	test ! "$result" && echo "No source for package '$1'" >>/dev/stderr && exit 1
+	result="$(cat "$home/handlers.available" | while read handler
+	do find "$home/packages/$1" -name "$handler*" 2>/dev/null
+	done)"
+	test ! "$result" && echo "No handler for package '$1'" >>/dev/stderr && exit 1
 	echo "$result"
 }
 
-getcontent() {
-	case "$(file "$1")" in
-		*executable*) $1;;
-		*) cat "$1";;
-	esac
-}
 
-case $1 in
-	-a)
+case "$1" in
+	(--version)
+		printf "instalee r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
+		;;
+	(-a|--add)
 		dir="$home/packages/$2"
 		mkdir -p "$dir"
 		test $# -gt 3 && echo "$4">"$dir/$3" || $EDITOR "$dir/$3"
 		;;
-	*)
+	(*)
 		set -e
 		pkgs=$(get "$1")
 		echo "$pkgs" | while read pkg; do
@@ -42,4 +44,3 @@ case $1 in
 		done
 		;;
 esac
-

@@ -1,0 +1,11 @@
+#!/bin/sh
+# Install a package from a local or downloaded .deb-file and remove it
+loc="/tmp/install.deb"
+arg="$(read)"
+case "$arg" in
+  (http*) sudo wget -O "$loc" "$arg";;
+  (*) loc="$arg";;
+esac
+sudo dpkg -i "$loc"
+sudo apt -f install
+sudo rm -f "$loc"

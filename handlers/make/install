@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
-cd $1
+arg="$(read)"
+cd "$arg"
 sudo checkinstall

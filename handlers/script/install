@@ -1,0 +1,7 @@
+#!/bin/sh
+read arg
+read name
+location="/usr/local/bin/${name:-$(basename "$arg")}"
+curl "$arg" | sudo tee "$location" > /dev/null
+sudo chmod +x "$location"
+test "$INSTALEE_VERBOSE" -lt 3 || echo "Installed $name to $location"
