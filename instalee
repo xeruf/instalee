@@ -80,17 +80,21 @@ case "$1" in
 		;;
 esac
 
-exitcode=0
-while test $# -gt 0; do
+runinstalee() {
 	groupfile="$home/groups/$1"
 	if test -f "$groupfile"
 	then for pkg in $(getcontent "$groupfile")
-		 do installpkg "$pkg" ||
-				 "$home/handlers/$(head -1 handlers.available)/install" "$pkg"
-		 done
+		do runinstalee "$pkg" ||
+			"$home/handlers/$(head -1 handlers.available)/install" "$pkg"
+		done
 	else installpkg "$1"
-		 exitcode=$(expr $exitcode \| $?)
 	fi
+}
+
+exitcode=0
+while test $# -gt 0; do
+	runinstalee "$1"
+	exitcode=$(expr $exitcode \| $?)
 	shift
 done
 exit $exitcode
