@@ -1,6 +1,7 @@
 #!/bin/sh
 
-home="${INSTALEE_HOME:-${XDG_CONFIG_HOME:-$HOME/.config}/instalee}"
+name="$(basename "$0")"
+home="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
 
 underline() { echo "[4m$1[0m"; }
 
@@ -9,27 +10,30 @@ getcontent() { test -x "$1" && "$1" || cat "$1"; }
 
 # Get available package entries for given package
 get() {
-	result="$(cat "$home/handlers.available" | while read handler
+	cat "$home/handlers.available" | while read handler
 	do find "$home/packages/$1" -name "$handler*" 2>/dev/null
-	done)"
-	test ! "$result" && echo "No handler for package '$1'" >>/dev/stderr && exit 1
-	echo "$result"
+	done
 }
 
-
 case "$1" in
-	(--version)
-		printf "instalee r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+	(--version|"")
+		printf "$0 r%s.%s\n" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+		echo "Try '$0 --help' or 'man $name' for usage info"
 		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
 		;;
+	(-?|-h|--help)
+		man $name 2>/dev/null || man "$home/$name.1";;
 	(-a|--add)
 		dir="$home/packages/$2"
 		mkdir -p "$dir"
 		test $# -gt 3 && echo "$4">"$dir/$3" || $EDITOR "$dir/$3"
 		;;
-	(*)
-		set -e
-		pkgs=$(get "$1")
+	(*) pkgs=$(get "$1")
+		if test -z "$pkgs"
+		then
+			printf "No handler available for package '%s'\n" "$1" >&2
+			exit 2
+		fi
 		echo "$pkgs" | while read pkg; do
 			underline "$pkg"
 			name="$(basename $pkg)"

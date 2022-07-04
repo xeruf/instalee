@@ -11,7 +11,7 @@ instalee - Unix-style universal package management wrapper
 
 .B instalee <packagename>
 .br
-.B instalee [-a] <packagename> <identifier> [<content>]
+.B instalee [-a|--add] <packagename> <identifier> [<content>]
 
 .SH DESCRIPTION
 
@@ -41,7 +41,7 @@ There is also a special "manager" called "custom". A package file with that name
 <packagename>
 The package to install. Corresponds to a directory in "packages".
 .TP
--a
+-a|--add
 Add a package, instead of installing it.
 .TP
 <identifier>
@@ -50,11 +50,23 @@ Name of the packager for which this entry is meant, plus potential pre- and suff
 <content>
 Content of the file for the package to be added. If omitted, the file is opened with $EDITOR. Note that the parent directory is definitely created by then, but the file isn't.
 
+.SH EXIT CODES
+
+.TP
+0
+Success
+.TP
+1
+Unexpected exit
+.TP
+2
+Could not install all packages
+
 .SH PHILOSOPHY
 
-instalee is meant to closely follow the UNIX philosophy, by using directory structures and files instead of configuration files. The goal is to be as generic as possible, but there are still a few exceptions. If you have an idea how to incorporate them generically, I am all ears.
+instalee is meant to closely follow the UNIX philosophy, by using directory structures and files as configuration. The goal is to be as generic as possible, but there are still a few exceptions. If you have an idea how to incorporate them generically, I am all ears.
 .RS
-\(bu THe "custom" package file type, as explained above.
+\(bu The "custom" package file type, as explained above.
 .RE
 .RS
 \(bu A manager must not start with a number nor contain any underscores.
