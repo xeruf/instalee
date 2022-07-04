@@ -17,17 +17,46 @@ get() {
 	done
 }
 
+# Install a package by name
+installpkg() {
+	pkgs=$(get "$1")
+	if test -z "$pkgs"
+	then
+		printf "No handler available for package '%s'\n" "$1" >&2
+		return 2
+	fi
+	for pkg in $pkgs; do
+		highlight "$pkg"
+		name="$(basename $pkg)"
+		base="${name%_*}"
+
+		ext="${name#$base}"
+		handler="$home/handlers/$base"
+		if test -d "$handler"
+		then
+			args="$(getcontent "$pkg")"
+			install="$(find "$handler" -name "install$ext" | head -1)" &&
+				destress " $install $args" &&
+				$install $args
+		else
+			destress " running unhandled $pkg"
+			$pkg
+		fi
+		break
+	done
+}
+
 ## EXECUTION
 chmod +rx "$home/handlers" -R
 
 case "$1" in
-	(-v|--version|"")
+	(-V|--version|"")
 		printf "$0 r%s.%s\n" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 		echo "Try '$0 --help' or 'man $name' for usage info"
 		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
 		exit 0
 		;;
-	(-?|-h|--help)
+	(-h|--help)
 		man $name 2>/dev/null || man "$home/$name.1"
 		exit $?
 		;;
@@ -44,31 +73,13 @@ case "$1" in
 esac
 
 while test $# -gt 0; do
-	pkgs=$(get "$1")
-	if test -z "$pkgs"
-	then
-		printf "No handler available for package '%s'\n" "$1" >&2
-		exit 2
+	groupfile="$home/groups/$1"
+	if test -f "$groupfile"
+	then for pkg in $(getcontent "$groupfile")
+		 do installpkg "$pkg" ||
+				 "$home/handlers/$(head -1 handlers.available)/install" "$pkg"
+		 done
+	else installpkg "$1"
 	fi
-	for pkg in $pkgs; do
-		highlight "$pkg"
-		name="$(basename $pkg)"
-		base="${name%_*}"
-		test "$base" = "custom" && $pkg && exit 0
-
-		ext="${name#$base}"
-		mgr="$home/handlers/$base"
-		if test -d "$mgr"
-		then
-			args="$(getcontent "$pkg")"
-			install="$(find "$mgr" -name "install$ext" | head -1)" &&
-				destress " $install $args" &&
-				$install $args
-		else
-			destress " running unhandled $pkg"
-			$pkg
-		fi
-		break
-	done
 	shift
 done

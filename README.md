@@ -30,7 +30,7 @@ Keep the following in mind when configuring instalee:
   for sensible syncing across many different machines
   a mechanism such as [yasm alternate files](https://yadm.io/docs/alternates)
   can prove useful.
-- `collections` are usually personal, but system-agnostic
+- `groups` are usually personal, but system-agnostic
 - `handlers` and `packages` need to be attuned,
   as the package entry format needs to fit the handler definitions.
   These may be obtained from a trusted source
@@ -44,12 +44,14 @@ See the [man page](instalee.1) for more details.
 
 `instalee <target>`
 
-A _target_ may either be a _package_ or a _collection_.
-*Instalee* first checks for a `collections/<target>` file.
-A _collection_ is a newline-separated list of packages to install,
+A _target_ may either be a _package_ or a _group_.
+*Instalee* first checks for a `groups/<target>` file.
+A _group_ is a newline-separated list of packages to install,
 which *instalee* then resolves individually.
+One difference here is that it will try the first handler for the package
+if it has no associated definition.
 
-When there is no corresponding _collection_,
+When there is no corresponding _group_,
 *instalee* searches for the first available _handler_
 with a corresponding entry at `packages/<target>/<handler>`,
 piping it into the _handler_ to install the package.
@@ -57,14 +59,12 @@ The package definition may be an empty file
 (thus simply indicating the availability of a package for a _handler_),
 in which case the name of the package is passed to the _handler_.
 
-Note that both _collections_ and package entries can be executable files,
+Note that both _groups_ and package entries can be executable files,
 in which case *instalee* will execute them and use their output instead,
 so watch the file permissions!
 If an available _handler_ has no definition in `handlers`,
 the package file _has to be_ executable,
 as *instalee* will then simply execute it.
-This _handler_ is usually named `custom`,
-though that is no requirement.
 
 ### Handlers
 
@@ -80,7 +80,7 @@ enabling batching and the consolidation of interdependent packages into one unit
 ## Planned
 - detection mechanism for handlers and features
   (e.g. whether they support batching)
-- helper/hook for adding packages to collections upon install
+- helper/hook for adding packages to groups upon install
   (at least for `pacman`)
 
 ## TODOs
