@@ -1,2 +1,2 @@
 #!/bin/sh
-xargs sudo pacman -S --needed --noconfirm "$@"
+sudo pacman -S --needed --noconfirm "$@"

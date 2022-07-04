@@ -1,2 +1,2 @@
 #!/bin/sh
-xargs sudo apt install "$@"
+sudo apt install "$@"
