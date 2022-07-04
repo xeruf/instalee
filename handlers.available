@@ -1,8 +1,6 @@
 arch
 aur
-snap
-flatpak
 script
-make
 zsh
 linux
+cargo

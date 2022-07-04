@@ -73,19 +73,24 @@ a typical handler will accept
 a newline-separated list of packages to install,
 enabling batching and the consolidation of interdependent packages into one unit.
 
-## What instalee is not
+When installing a package and there is no handler available,
+but a package with the name of a handler of the package has an installable candidate,
+the handler will be installed, made available and used.
+
+## Features 
+
+### What instalee is not
 - a (central) package repository containing package sources
 - a package manager that can inspect or remove packages
 
-## Planned
+### Planned
 - detection mechanism for handlers and features
   (e.g. whether they support batching)
 - helper/hook for adding packages to groups upon install
   (at least for `pacman`)
 
-## TODOs
+### TODOs
 - Debug corner cases
-- Implement Collections
 - Handler preparation - update repos and cache last update time in /tmp
 
 ### Windows
