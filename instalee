@@ -1,9 +1,11 @@
 #!/bin/sh
 
+## DEFINITIONS
 name="$(basename "$0")"
 home="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
 
-underline() { echo "[4m$1[0m"; }
+highlight() { echo "[1m$1[0m"; }
+destress() { echo "[2m$1[0m"; }
 
 # Get the content of a file or the output of its execution
 getcontent() { test -x "$1" && "$1" || cat "$1"; }
@@ -15,36 +17,58 @@ get() {
 	done
 }
 
+## EXECUTION
+chmod +rx "$home/handlers" -R
+
 case "$1" in
-	(--version|"")
+	(-v|--version|"")
 		printf "$0 r%s.%s\n" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 		echo "Try '$0 --help' or 'man $name' for usage info"
 		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
+		exit 0
 		;;
 	(-?|-h|--help)
-		man $name 2>/dev/null || man "$home/$name.1";;
+		man $name 2>/dev/null || man "$home/$name.1"
+		exit $?
+		;;
 	(-a|--add)
 		dir="$home/packages/$2"
 		mkdir -p "$dir"
 		test $# -gt 3 && echo "$4">"$dir/$3" || $EDITOR "$dir/$3"
+		exit $?
 		;;
-	(*) pkgs=$(get "$1")
-		if test -z "$pkgs"
-		then
-			printf "No handler available for package '%s'\n" "$1" >&2
-			exit 2
-		fi
-		echo "$pkgs" | while read pkg; do
-			underline "$pkg"
-			name="$(basename $pkg)"
-			base="${name%_*}"
-			test "$base" = "custom" && $pkg && exit 0
-
-			ext="${name##$base}"
-			mgr="$home/managers/$base"
-			args="$(getcontent "$pkg")"
-			install="$(find "$mgr" -name "install$ext" | head -1)" && echo "Invoking '$install $args'" && $install $args
-			exit 0
-		done
+	(-v|--verbose)
+		set -x
+		shift
 		;;
 esac
+
+while test $# -gt 0; do
+	pkgs=$(get "$1")
+	if test -z "$pkgs"
+	then
+		printf "No handler available for package '%s'\n" "$1" >&2
+		exit 2
+	fi
+	for pkg in $pkgs; do
+		highlight "$pkg"
+		name="$(basename $pkg)"
+		base="${name%_*}"
+		test "$base" = "custom" && $pkg && exit 0
+
+		ext="${name#$base}"
+		mgr="$home/handlers/$base"
+		if test -d "$mgr"
+		then
+			args="$(getcontent "$pkg")"
+			install="$(find "$mgr" -name "install$ext" | head -1)" &&
+				destress " $install $args" &&
+				$install $args
+		else
+			destress " running unhandled $pkg"
+			$pkg
+		fi
+		break
+	done
+	shift
+done
