@@ -16,14 +16,16 @@ creating alternative frontends is easy and appreciated.
 ### Configuration
 
 All configuration is stored in `INSTALEE_HOME` 
-which defaults to `$XDG_CONFIG_HOME/instalee`.
+which defaults to `$XDG_CONFIG_HOME/instalee`
+or the current directory.
 
-First, customize the _handlers_ available on your system in `$INSTALEE_HOME/handlers.available`
+First, customize the _handlers_ available on your system 
+in `$INSTALEE_HOME/handlers.available`
 which is a newline-separated list of values 
 that usually correspond to subdirectories of the `handlers` directory.
-The order determines the preference in which the _handlers_ are consulted.
+The _handlers_ are tried in the order they are listed.
 
-The following should be kept in mind when configuring instalee
+Keep the following in mind when configuring instalee:
 - `handlers.available` is a system-specific file,
   for sensible syncing across many different machines
   a mechanism such as [yasm alternate files](https://yadm.io/docs/alternates)
@@ -71,7 +73,6 @@ a typical handler will accept
 a newline-separated list of packages to install,
 enabling batching and the consolidation of interdependent packages into one unit.
 
-
 ## What instalee is not
 - a (central) package repository containing package sources
 - a package manager that can inspect or remove packages
@@ -81,3 +82,13 @@ enabling batching and the consolidation of interdependent packages into one unit
   (e.g. whether they support batching)
 - helper/hook for adding packages to collections upon install
   (at least for `pacman`)
+
+## TODOs
+- Debug corner cases
+- Implement Collections
+- Handler preparation - update repos and cache last update time in /tmp
+
+### Windows
+- Install choco and git offline
+- Run in git bash
+- Use choco/choco-offline sources

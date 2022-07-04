@@ -15,15 +15,24 @@ instalee - Unix-style universal package management wrapper
 
 .SH DESCRIPTION
 
-instalee provides a generic interface for installing packages. Instead of knowing it all, it relies on the user configuring it to his needs while itself being as dumb as possible.
+instalee provides a generic interface for installing packages.
+Instead of knowing it all, it relies on the user configuring it to his needs while itself being as dumb as possible.
 
-Its configuration resides in a folder defaulting to XDG_CONFIG_HOME/instalee, but may be tweaked by simply editing the beginning of the script. It contains a \fIhandlers\fP and \fIpackages\fP directory and the \fIhandlers.available\fP file.
+Its configuration resides in a folder defaulting to XDG_CONFIG_HOME/instalee.
+It contains a \fIhandlers\fP and \fIpackages\fP directory and the \fIhandlers.available\fP file.
 
-The \fIhandlers\fP directory contains a directory for each package handler, but in a very generic sense. Usually you will only need to create a directory for the package handler and then an \fIinstall\fP file that processes packages. The file should be executable. It will receive the \fIpackage\fP file result as input, or merely the package name in case that is empty.
+The \fIhandlers\fP directory contains a directory for each package manager.
+Usually you will only need to create a directory for the package manager and then an \fIinstall\fP file that processes packages.
+The file should be executable.
+It will receive the \fIpackage\fP file result as argument, or merely the package name in case that is empty.
 
-When using multiple different system, the \fIhandlers.available\fP file unfolds its purpose. It is simply a newline-separated list of the package handlers available on the system, in order of preference. When installing a package, instalee uses the first match of a \fIhandlers.available\fP entry with a file in the package directory.
+When using multiple different system, the \fIhandlers.available\fP file unfolds its purpose.
+It is simply a newline-separated list of the package handlers available on the system, in order of preference.
+When installing a package, instalee uses the first match of a \fIhandlers.available\fP entry with a file in the package directory.
 
-The \fIpackages\fP directory will contain the bulk of the information. It contains a directory for each package, which is then filled with files named according to the handler they represent. There are three options for this file, and the result determines the arguments to the \fIhandler\fP.
+The \fIpackages\fP directory will contain the bulk of the information.
+It contains a directory for each package, which is then filled with files named according to the handler they represent.
+There are three options for this file, and the result determines the arguments to the \fIhandler\fP:
 .RS
 1. The file is empty. The package name is used as argument.
 .RE
@@ -34,10 +43,7 @@ The \fIpackages\fP directory will contain the bulk of the information. It contai
 3. The file is executable. The file is executed and the output is used as argument.
 .RE
 
-If a \fIhandler\fP is available without entry in \fIhandlers\fP
-(commonly named after what it requires as/on the system),
-package files for that handler will be executed without invoking a handler.
-Such a package file must be executable.
+If a \fIhandler\fP is available without entry in \fIhandlers\fP (commonly named after what it requires as/on the system), package files for that handler will be executed without invoking a handler. Such a package file must be executable.
 
 .SH OPTIONS
 .TP
@@ -51,7 +57,8 @@ Add a package, instead of installing it.
 Name of the packager for which this entry is meant, plus potential pre- and suffixes.
 .TP
 <content>
-Content of the file for the package to be added. If omitted, the file is opened with $EDITOR. Note that the parent directory is definitely created by then, but the file isn't.
+Content of the file for the package to be added. If omitted, the file is opened with $EDITOR.
+Note that the parent directory is definitely created by then, but the file isn't.
 
 .SH EXIT CODES
 
@@ -67,16 +74,8 @@ Could not install all packages
 
 .SH PHILOSOPHY
 
-instalee is meant to closely follow the UNIX philosophy, by using directory structures and files as configuration. The goal is to be as generic as possible, but there are still a few exceptions. If you have an idea how to incorporate them generically, I am all ears.
-.RS
-\(bu The \fIcustom\fP package file type, as explained above.
-.RE
-.RS
-\(bu A handler must not start with a number nor contain any underscores.
-.RE
-.RS
-\(bu tbd
-.RE
+instalee closely follows the UNIX philosophy with directory structures and files as configuration.
+The goal is to be as generic as possible to accomodate any kind of setup.
 
 .SH BUGS
 
