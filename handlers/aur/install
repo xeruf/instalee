@@ -1,2 +1,2 @@
 #!/bin/sh
-xargs sudo yay -S
+yay -S --needed --noconfirm "$@"

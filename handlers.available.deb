@@ -1,5 +1,5 @@
-arch
-aur
+apt
+deb
 snap
 flatpak
 script
