@@ -1,6 +1,6 @@
 #!/bin/sh
-read arg
-read name
+arg=$1
+name=$2
 location="/usr/local/bin/${name:-$(basename "$arg")}"
 curl "$arg" | sudo tee "$location" > /dev/null
 sudo chmod +x "$location"
