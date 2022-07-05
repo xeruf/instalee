@@ -4,7 +4,7 @@
 name="$(basename "$0")"
 home="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
 
-highlight() { echo "[1m$1[0m"; }
+highlight() { echo "[4m[1m$1[0m"; }
 destress() { echo "[2m$1[0m"; }
 
 # Get the content of a file or the output of its execution
@@ -13,7 +13,7 @@ getcontent() { test -x "$1" && "$1" || cat "$1"; }
 # Get available package entries for given package
 getentries() {
 	cat "$home/handlers.available" | while read handler
-	do find "$home/packages/$1" -name "$handler*" 2>/dev/null
+	do find "$home/packages/$1/" -type f -name "$handler*" 2>/dev/null
 	done
 }
 
@@ -22,7 +22,7 @@ installpkg() {
 	test "$1" = "--quiet" && local quiet=true && shift
 	local pkgs=$(getentries "$1")
 	if test -z "$pkgs"; then
-		local handlers=$(find "$home/packages/$1" -type f -printf "%f\n" 2>/dev/null)
+		local handlers=$(find "$home/packages/$1/" -type f -printf "%f\n" 2>/dev/null)
 		for handler in $handlers
 		do installpkg --quiet "$handler" &&
 				echo "$handler" >> "$home/handlers.available" &&
