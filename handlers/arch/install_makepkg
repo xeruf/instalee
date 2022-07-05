@@ -1,0 +1,9 @@
+#!/bin/sh -e
+case "$1" in
+(*://*) url=$1;;
+(*) url=https://aur.archlinux.org/$1.git;;
+esac
+cd /tmp
+git clone "$url"
+cd $(basename "${1%.git}")
+makepkg -si
