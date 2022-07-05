@@ -1,5 +1,1 @@
-#!/usr/bin/env sh
-cd /tmp
-git clone https://github.com/mwh/dragon
-cd dragon
-pwd
+https://github.com/mwh/dragon
