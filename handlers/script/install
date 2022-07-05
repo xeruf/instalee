@@ -2,6 +2,9 @@
 arg=$1
 name=$2
 location="/usr/local/bin/${name:-$(basename "$arg")}"
-curl "$arg" | sudo tee "$location" > /dev/null
+case "$arg" in
+    (*://*) curl "$arg" | sudo tee "$location" > /dev/null;;
+    (*) cp "$arg" "$location";;
+esac
 sudo chmod +x "$location"
 test "$INSTALEE_VERBOSE" -lt 3 || echo "Installed $name to $location"
