@@ -1,5 +1,6 @@
+#!/bin/sh -e
 cd /tmp
-git clone https://github.com/grafana/loki.git
+git clone https://github.com/grafana/loki.git || true
 cd loki
-make logcli
-cmd/logcli/logcli
+make logcli >&2
+echo "$PWD/cmd/logcli/logcli"

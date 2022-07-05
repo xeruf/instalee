@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/bin/sh -e
 arg=$1
 name=$2
 location="/usr/local/bin/${name:-$(basename "$arg")}"
 case "$arg" in
     (*://*) curl "$arg" | sudo tee "$location" > /dev/null;;
-    (*) cp "$arg" "$location";;
+    (*) sudo cp "$arg" "$location";;
 esac
 sudo chmod +x "$location"
 test "$INSTALEE_VERBOSE" -lt 3 || echo "Installed $name to $location"

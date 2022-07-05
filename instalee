@@ -8,7 +8,12 @@ highlight() { echo "[4m[1m$1[0m"; }
 destress() { echo "[2m$1[0m"; }
 
 # Get the content of a file or the output of its execution
-getcontent() { test -x "$1" && "$1" || cat "$1"; }
+getcontent() {
+	if test -x "$1"
+	then "$1"
+	else cat "$1"
+	fi
+}
 
 # Get available package entries for given package
 getentries() {
@@ -35,6 +40,7 @@ installpkg() {
 	fi
 	for pkg in $pkgs
 	do  highlight "$pkg"
+		set -e
 		local name="$(basename $pkg)"
 		local base="${name%_*}"
 
@@ -42,10 +48,13 @@ installpkg() {
 		local handler="$home/handlers/$base"
 		if test -d "$handler"
 		then
-			local args="$(getcontent "$pkg" | grep . || echo "$1")"
-			local install="$(find "$handler" -name "install$ext" | head -1)" &&
-				destress " $install $args" &&
-				$install $args
+			# This declaration needs to be ahead, otherwise it overrides failing exit codes
+			local args install
+			args="$(getcontent "$pkg")"
+			args="${args:-$1}"
+			install="$(find "$handler" -name "install$ext" | head -1)"
+			destress " $install $args"
+			$install $args
 		else
 			destress " running unhandled $pkg"
 			$pkg
