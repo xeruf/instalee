@@ -11,6 +11,14 @@ to copying or executing scripts from a URL.
 Similar as in [tldr](https://github.com/tldr-pages/tldr),
 creating alternative frontends is easy and appreciated.
 
+## Guiding Principles
+
+instalee closely follows the UNIX philosophy with directory structures and files as configuration.
+The goal is to be as generic as possible to accomodate any kind of setup.
+
+However, it should be efficient while generic,
+preventing repetition at every level.
+
 ## Usage
 
 ### Configuration
@@ -100,3 +108,25 @@ the handler will be installed, made available and used.
 - Install choco and git offline
 - Run in git bash
 - Use choco/choco-offline sources
+
+### Flow
+| Function | Software    | Handler              | Provider      | System  |
+|----------|-------------|----------------------|---------------|---------|
+| pdf      | okular      | chocolatey           | chocolatey    | Windows |
+|          | zathura     | arch                 | pacman or yay | Arch    |
+| loki     | loki        | arch                 | pacman or yay | Arch    |
+|          |             | make                 | checkinstall  | Debian  |
+|          |             | make                 | wocka         | Arch    |
+| logcli   | loki-logcli | script (depends: go) | script        | Debian  |
+|          |             | arch                 | pacman or yay | Arch    |
+|          | logcli-bin  | aur                  | yay           | Arch    |
+| zoom     | zoom        | deb                  | apt           | Debian  |
+|          |             | aur                  | yay           | Arch    |
+
+- Software and Provider are derived from Function and Handler but can change depending on the system
+- Idea: `providers/<provider>/<handler>[_<ext>]` rather than `handlers/<handler>/install[_<ext>]`
+  + but then one might duplicate the handler script if one provider handles multiple equally,
+    such as `yay` for arch and aur
+  + how about `providers/<handler>/<provider>[_<ext>]`? 
+    Same duplication issue, now spread out...
+  + underscore extension might be superfluous through that, since `ext` was somewhat a proxy for a proper `provider` configuraion
