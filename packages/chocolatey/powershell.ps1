@@ -139,3 +139,4 @@ if (!(Test-Path $ChocoInstallPath)) {
   # TODO If offline:
   #Install-ChocolateyFromPackage 'chocolatey.0.11.2.nupkg'
 }
+choco upgrade all
