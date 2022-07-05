@@ -44,7 +44,7 @@ installpkg() {
 		set -e
 		local name="$(basename $pkg)"
 		local base="${name%_*}"
-		for dependency in $(cat "${pkgdir}dependencies" "${pkgdir}${base}_dependencies" 2>/dev/null)
+		for dependency in $(cat "${pkgdir}depends" "${pkgdir}${base}_depends" 2>/dev/null)
 		do runinstalee $dependency
 		done
 
