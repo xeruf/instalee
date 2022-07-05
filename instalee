@@ -26,8 +26,9 @@ getentries() {
 installpkg() {
 	test "$1" = "--quiet" && local quiet=true && shift
 	local pkgs=$(getentries "$1")
+	local pkgdir="$home/packages/$1/"
 	if test -z "$pkgs"; then
-		local handlers=$(find "$home/packages/$1/" -type f -printf "%f\n" 2>/dev/null)
+		local handlers=$(find "$pkgdir" -type f -printf "%f\n" 2>/dev/null)
 		for handler in $handlers
 		do installpkg --quiet "$handler" &&
 				echo "$handler" >> "$home/handlers.available" &&
@@ -43,13 +44,17 @@ installpkg() {
 		set -e
 		local name="$(basename $pkg)"
 		local base="${name%_*}"
+		for dependency in $(cat "${pkgdir}dependencies" "${pkgdir}${base}_dependencies" 2>/dev/null)
+		do runinstalee $dependency
+		done
 
 		local ext="${name#$base}"
 		local handler="$home/handlers/$base"
 		if test -d "$handler"
 		then
 			# This declaration needs to be ahead, otherwise it overrides failing exit codes
-			local args install
+			local args
+			local install
 			args="$(getcontent "$pkg")"
 			args="${args:-$1}"
 			install="$(find "$handler" -name "install$ext" | head -1)"

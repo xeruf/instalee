@@ -78,6 +78,8 @@ but a package with the name of a handler of the package has an installable candi
 the handler will be installed, made available and used.
 
 ## Features 
+- Cross-handler dependencies (e.g. logcli script needs go)
+  -> currently implemented with `HANDLER_dependencies` files
 
 ### What instalee is not
 - a (central) package repository containing package sources
@@ -92,6 +94,7 @@ the handler will be installed, made available and used.
 ### TODOs
 - Debug corner cases
 - Handler preparation - update repos and cache last update time in /tmp
+- Handler providers e.g. different make mechanisms on arch and debian
 
 ### Windows
 - Install choco and git offline
