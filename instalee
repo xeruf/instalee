@@ -18,7 +18,7 @@ getcontent() {
 # Get available package entries for given package
 getentries() {
 	cat "$home/handlers.available" | while read handler
-	do find "$home/packages/$1/" -type f -name "$handler*" 2>/dev/null
+	do find "$home/packages/$1/" -depth -type f -name "$handler*" | tac 2>/dev/null
 	done
 }
 
