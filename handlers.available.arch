@@ -1,7 +1,8 @@
-make
+aur
 arch
-script
+cargo
 zsh
 linux
-cargo
+make
 git
+script

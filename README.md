@@ -103,6 +103,7 @@ the handler will be installed, made available and used.
 - Debug corner cases
 - Handler preparation - update repos and cache last update time in /tmp
 - Handler providers e.g. different make mechanisms on arch and debian
+- Run scripts in tempdir by default?
 
 ### Windows
 - Install choco and git offline
@@ -110,20 +111,24 @@ the handler will be installed, made available and used.
 - Use choco/choco-offline sources
 
 ### Flow
-| Function | Software    | Handler              | Provider      | System  |
-|----------|-------------|----------------------|---------------|---------|
-| pdf      | okular      | chocolatey           | chocolatey    | Windows |
-|          | zathura     | arch                 | pacman or yay | Arch    |
-| loki     | loki        | arch                 | pacman or yay | Arch    |
-|          |             | make                 | checkinstall  | Debian  |
-|          |             | make                 | wocka         | Arch    |
-| logcli   | loki-logcli | script (depends: go) | script        | Debian  |
-|          |             | arch                 | pacman or yay | Arch    |
-|          | logcli-bin  | aur                  | yay           | Arch    |
-| zoom     | zoom        | deb                  | apt           | Debian  |
-|          |             | aur                  | yay           | Arch    |
+| Function       | Software       | Handler              | Provider      | System        |
+|----------------|----------------|----------------------|---------------|---------------|
+| pdf            | okular         | chocolatey           | chocolatey    | Windows       |
+|                | zathura        | arch                 | pacman or yay | Arch          |
+|                | timg poppler   | apt                  | apt           | Debian Server |
+| loki           | loki           | arch                 | pacman or yay | Arch          |
+|                |                | make                 | checkinstall  | Debian        |
+|                |                | make                 | wocka         | Arch          |
+| logcli         | loki-logcli    | script (depends: go) | script        | Debian        |
+|                |                | arch                 | pacman or yay | Arch          |
+|                | logcli-bin     | aur                  | yay           | Arch          |
+| zoom           | zoom           | deb                  | apt           | Debian        |
+|                |                | aur                  | yay           | Arch          |
+| screen-capture | spectacle peek | arch                 | pac/yay       | Arch          |
+|                | screentogif    | chocolatey           | chocolatey    | Windows       |
 
 - Software and Provider are derived from Function and Handler but can change depending on the system
+  -> no way of declaring function so far, maybe via groups somehow?
 - Idea: `providers/<provider>/<handler>[_<ext>]` rather than `handlers/<handler>/install[_<ext>]`
   + but then one might duplicate the handler script if one provider handles multiple equally,
     such as `yay` for arch and aur
