@@ -40,7 +40,7 @@ installpkg() {
 		return 2
 	fi
 	for pkg in $pkgs
-	do  highlight "$pkg"
+	do  highlight "Installing $(echo ${pkg#$home/packages/} | sed 's|\(.*\)/|\1 via |')"
 		set -e
 		local name="$(basename $pkg)"
 		local base="${name%_*}"
@@ -73,7 +73,7 @@ chmod +rx "$home/handlers" -R
 
 case "$1" in
 	(-V|--version|"")
-		printf "$0 r%s.%s\n" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+		printf "$name r%s.%s\n" "$(git rev-list --count HEAD 2>/dev/null)" "$(git rev-parse --short HEAD 2>/dev/null)"
 		echo "Try '$0 --help' or 'man $name' for usage info"
 		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
 		exit 0

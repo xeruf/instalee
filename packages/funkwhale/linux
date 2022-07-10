@@ -1,0 +1,1 @@
+sudo sh -c "$(curl -sSL https://get.funkwhale.audio/)"

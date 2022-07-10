@@ -103,7 +103,8 @@ the handler will be installed, made available and used.
 - Debug corner cases
 - Handler preparation - update repos and cache last update time in /tmp
 - Handler providers e.g. different make mechanisms on arch and debian
-- Run scripts in tempdir by default?
+- Run file in tempdir by default?
+- Handler for downloaded scripts (e.g. passff-host, funkwhale)
 
 ### Windows
 - Install choco and git offline
