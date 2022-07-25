@@ -2,7 +2,8 @@
 
 ## DEFINITIONS
 name="$(basename "$0")"
-home="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
+homedir="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
+packagedir="$homedir/packages"
 
 highlight() { echo "[4m[1m$1[0m"; }
 destress() { echo "[2m$1[0m"; }
@@ -17,8 +18,8 @@ getcontent() {
 
 # Get available package entries for given package
 getentries() {
-	cat "$home/handlers.available" | while read handler
-	do find "$home/packages/$1/" -depth -type f -name "$handler*" | tac 2>/dev/null
+	cat "$homedir/handlers.available" | while read handler
+	do find "$packagedir/$1/" -depth -type f -name "$handler*" | tac 2>/dev/null
 	done
 }
 
@@ -26,12 +27,12 @@ getentries() {
 installpkg() {
 	test "$1" = "--quiet" && local quiet=true && shift
 	local pkgs=$(getentries "$1")
-	local pkgdir="$home/packages/$1/"
+	local pkgdir="$packagedir/$1/"
 	if test -z "$pkgs"; then
 		local handlers=$(find "$pkgdir" -type f -printf "%f\n" 2>/dev/null)
 		for handler in $handlers
 		do installpkg --quiet "$handler" &&
-				echo "$handler" >> "$home/handlers.available" &&
+				echo "$handler" >> "$homedir/handlers.available" &&
 				installpkg "$1" &&
 				return $?
 		done
@@ -40,7 +41,7 @@ installpkg() {
 		return 2
 	fi
 	for pkg in $pkgs
-	do  highlight "Installing $(echo ${pkg#$home/packages/} | sed 's|\(.*\)/|\1 via |')"
+	do  highlight "Installing $(echo ${pkg#$packagedir/} | sed 's|\(.*\)/|\1 via |')"
 		set -e
 		local name="$(basename $pkg)"
 		local base="${name%_*}"
@@ -49,7 +50,7 @@ installpkg() {
 		done
 
 		local ext="${name#$base}"
-		local handler="$home/handlers/$base"
+		local handler="$homedir/handlers/$base"
 		if test -d "$handler"
 		then
 			# This declaration needs to be ahead, otherwise it overrides failing exit codes
@@ -69,7 +70,7 @@ installpkg() {
 }
 
 ## EXECUTION
-chmod +rx "$home/handlers" -R
+chmod +rx "$homedir/handlers" -R
 
 case "$1" in
 	(-V|--version|"")
@@ -79,14 +80,31 @@ case "$1" in
 		exit 0
 		;;
 	(-h|--help)
-		man $name 2>/dev/null || man "$home/$name.1"
+		man $name 2>/dev/null || man "$homedir/$name.1"
 		exit $?
 		;;
 	(-a|--add)
-		dir="$home/packages/$2"
+		shift
+		if test $# -gt 0
+		then packagename=$1; shift
+		else printf "Name of the package? "; read packagename
+		fi
+		dir="$packagedir/$packagename"
 		mkdir -p "$dir"
-		test $# -gt 3 && echo "$4">"$dir/$3" || $EDITOR "$dir/$3"
-		exit $?
+		if test $# -gt 0
+		then handler=$1
+			 test $# -gt 1 && echo "$2">"$dir/$handler" || $EDITOR "$dir/$handler"
+			 exit $?
+		else
+			while printf "Handler? (Ctrl-C or Ctrl-D to exit, / to list all) " && read handler
+			do
+				case "$handler" in
+				(/*) find "$packagedir" "$homedir/handlers" -type f -not -name "*depends" -printf "%f\n" | sort | uniq | paste -s -d ' ';;
+				(*) $EDITOR "$dir/$handler";;
+				esac
+			done
+			exit 0
+		fi
 		;;
 	(-v|--verbose)
 		set -x
@@ -95,11 +113,11 @@ case "$1" in
 esac
 
 runinstalee() {
-	groupfile="$home/groups/$1"
+	groupfile="$homedir/groups/$1"
 	if test -f "$groupfile"
 	then for pkg in $(getcontent "$groupfile")
 		do runinstalee "$pkg" ||
-			"$home/handlers/$(head -1 handlers.available)/install" "$pkg"
+			"$homedir/handlers/$(head -1 handlers.available)/install" "$pkg"
 		done
 	else installpkg "$1"
 	fi

@@ -9,9 +9,11 @@ instalee - Unix-style universal package management wrapper
 
 .SH SYNOPSIS
 
-.B instalee <packagename>
+.B instalee <packagename>...
+- install packages
 .br
-.B instalee [-a|--add] <packagename> <identifier> [<content>]
+.B instalee <-a|--add> [packagename] [handler] [<content>]
+- add new packages
 
 .SH DESCRIPTION
 
@@ -48,17 +50,18 @@ If a \fIhandler\fP is available without entry in \fIhandlers\fP (commonly named 
 .SH OPTIONS
 .TP
 <packagename>
-The package to install. Corresponds to a directory in \fIpackages\fP.
+The package. Corresponds to a directory in \fIpackages\fP.
 .TP
 -a|--add
-Add a package, instead of installing it.
+Add a package entry to the repo. Will prompt for missing arguments.
 .TP
 <identifier>
 Name of the packager for which this entry is meant, plus potential pre- and suffixes.
 .TP
 <content>
-Content of the file for the package to be added. If omitted, the file is opened with $EDITOR.
-Note that the parent directory is definitely created by then, but the file isn't.
+Content of the file for the package to be added.
+If omitted, the file is opened with $EDITOR.
+Note that the parent directory already exists by then, but the file does not.
 
 .SH EXIT CODES
 
