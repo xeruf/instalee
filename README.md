@@ -1,4 +1,4 @@
-# instalee
+# Instalee
 
 Inspired by [pass](passwordstore.org "The standard Unix password manager")
 and the Unix philosophy 
@@ -23,21 +23,30 @@ on any system with a POSIX Shell available
 you could easily port it to another foundation,
 preserving the file structure).
 
-## Guiding Principles
-
-instalee closely follows the UNIX philosophy with directory structures and files as configuration.
-The goal is to be as generic as possible to accomodate any kind of setup.
-
-However, it should be efficient while generic,
-preventing repetition at every level (DRY).
-
 ## Usage
+
+### Installation
+
+To try Instalee with some pre-configured options,
+clone or download the repository and run the included script.
+Currently this supports Debian- and Arch-based systems,
+as well as a few packages via *snap*, *cargo* and custom scripts
+usually imported from the original project site.
+
+Alternatively, you can download just the [`instalee`](./instalee) script
+and configure it yourself.
+On Arch you can install the script to `/usr/bin` 
+and the man-page with the `instalee-git` AUR package.
+
+An install helper for Windows,
+that prepares chocolatey either on- and offline
+and installs git bash, is in the works.
 
 ### Configuration
 
 All configuration is stored in `INSTALEE_HOME` 
-which defaults to `$XDG_CONFIG_HOME/instalee`
-or the current directory.
+which defaults to the first available of
+`$XDG_CONFIG_HOME/instalee` or the current directory.
 
 First, customize the _handlers_ available on your system 
 in `$INSTALEE_HOME/handlers.available`
@@ -45,7 +54,7 @@ which is a newline-separated list of values
 that usually correspond to subdirectories of the `handlers` directory.
 The _handlers_ are tried in the order they are listed.
 
-Keep the following in mind when configuring instalee:
+Keep the following in mind when configuring Instalee:
 - `handlers.available` is a system-specific file,
   for sensible syncing across many different machines
   a mechanism such as [yasm alternate files](https://yadm.io/docs/alternates)
@@ -59,19 +68,19 @@ Keep the following in mind when configuring instalee:
 This repository contains an example configuration as used by the author.
 See the [man page](instalee.1) for more details.
 
-### Installation
+### Installing Packages
 
 `instalee <target>`
 
 A _target_ may either be a _package_ or a _group_.
-*Instalee* first checks for a `groups/<target>` file.
+Instalee first checks for a `groups/<target>` file.
 A _group_ is a newline-separated list of packages to install,
-which *instalee* then resolves individually.
+which instalee then resolves individually.
 One difference here is that it will try the first handler for the package
 if it has no associated definition.
 
 When there is no corresponding _group_,
-*instalee* searches for the first available _handler_
+instalee searches for the first available _handler_
 with a corresponding entry at `packages/<target>/<handler>`,
 piping it into the _handler_ to install the package.
 The package definition may be an empty file
@@ -79,57 +88,79 @@ The package definition may be an empty file
 in which case the name of the package is passed to the _handler_.
 
 Note that both _groups_ and package entries can be executable files,
-in which case *instalee* will execute them and use their output instead,
+in which case instalee will execute them and use their output instead,
 so watch the file permissions!
 If an available _handler_ has no definition in `handlers`,
 the package file _has to be_ executable,
-as *instalee* will then simply execute it.
+as instalee will then simply execute it.
 
 ### Handlers
 
 Though not required,
-a typical handler will accept 
-a newline-separated list of packages to install,
+a typical handler will accept a list of packages to install as arguments,
 enabling batching and the consolidation of interdependent packages into one unit.
 
 When installing a package and there is no handler available,
 but a package with the name of a handler of the package has an installable candidate,
 the handler will be installed, made available and used.
 
-## Features 
-- Cross-handler dependencies (e.g. logcli script needs go)
-  -> currently implemented with `HANDLER_depends` files
+When installing packages from groups without candidate,
+the first available handler will be tried regardless
+so default-named packages do not always need to setup explicitly
+(TODO: Auto-update repo if that succeeds with flag to disable,
+flag for manual installation).
 
-### What instalee is not
+## Guiding Principles
+
+Instalee closely follows the UNIX philosophy with directory structures and files as configuration.
+The goal is to be as generic as possible to accomodate any kind of setup.
+
+However, it should be efficient while generic,
+preventing repetition at every level (DRY).
+
+### What Instalee is not
 - a (central) package repository containing package sources
 - a package manager to inspect or remove packages
 - a tool to upgrade all installed packages from various sources -
   see `topgrade`
+
+## Features
+
+A loose list of undocumented features 
+and ideas that need to be fleshed out.
+
+- Cross-handler dependencies (e.g. logcli script needs go)
+  -> currently implemented with `HANDLER_depends` files
 
 ### Planned
 - detection mechanism for handlers and features
   (e.g. whether they support batching)
 - helper/hook for adding packages to groups upon install
   (at least for `pacman`)
-
-### TODOs
-- Debug corner cases
-- Handler preparation - update repos and cache last update time in /tmp
-- Handler providers e.g. different make mechanisms on arch and debian
-- Run file in tempdir by default?
-- Handler for downloaded scripts (e.g. passff-host, funkwhale)
 - Ability to use multiple repos, including remote
 - Log Installs for reuse
+- AUR: Install man-page, Readme to /usr/share/doc
 
-### Windows
+### Random TODOs
+- Debug corner cases
+- Handler preparation - update repos and cache last update time in /tmp
+- Run file in tempdir by default?
+- Handler for downloaded scripts (e.g. passff-host, funkwhale)
+
+#### Windows
 - Install choco and git offline
 - Run in git bash
 - Use choco/choco-offline sources
 
 ### Flow
-This is a revamped concept that would ease setting up new devices with different systems
+This is a revamped concept 
+that would ease setting up new devices with different systems
 by adding a mapping of functions to applications
-as well as handlers to providers.
+as well as handlers to providers
+(e.g. different make mechanisms on Arch and Debian).
+That way, the same functionality is available everywhere,
+but can be provided by different packages
+as different systems have different users.
 The following tables lists some real-world examples to consider,
 but the details still need to be fleshed out.
 
@@ -159,3 +190,5 @@ but the details still need to be fleshed out.
   + how about `providers/<handler>/<provider>[_<ext>]`? 
     Same duplication issue, now spread out...
   + underscore extension might be superfluous through that, since `ext` was somewhat a proxy for a proper `provider` configuraion
+- Use system subdirectories for handlers and groups,
+  which are used by default when system is detected
