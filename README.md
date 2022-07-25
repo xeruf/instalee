@@ -11,13 +11,25 @@ to copying or executing scripts from a URL.
 Similar as in [tldr](https://github.com/tldr-pages/tldr),
 creating alternative frontends is easy and appreciated.
 
+Instalee can install the same set of packages on any system
+with graceful failure if any package is unavailable.
+With appropriate setup and logging (TBD)
+it can also keep the installed packages in sync.
+Simply, Instalee can be used as a unified installation frontend,
+both manual and automatic,
+to any package manager or other method of installation
+on any system with a POSIX Shell available
+(and the basic logic is so simple 
+you could easily port it to another foundation,
+preserving the file structure).
+
 ## Guiding Principles
 
 instalee closely follows the UNIX philosophy with directory structures and files as configuration.
 The goal is to be as generic as possible to accomodate any kind of setup.
 
 However, it should be efficient while generic,
-preventing repetition at every level.
+preventing repetition at every level (DRY).
 
 ## Usage
 
@@ -42,10 +54,9 @@ Keep the following in mind when configuring instalee:
 - `handlers` and `packages` need to be attuned,
   as the package entry format needs to fit the handler definitions.
   These may be obtained from a trusted source
-  or configured personally as well.
+  or configured personally.
 
-This repository contains an example configuration
-as used by the author.
+This repository contains an example configuration as used by the author.
 See the [man page](instalee.1) for more details.
 
 ### Installation
@@ -87,11 +98,13 @@ the handler will be installed, made available and used.
 
 ## Features 
 - Cross-handler dependencies (e.g. logcli script needs go)
-  -> currently implemented with `HANDLER_dependencies` files
+  -> currently implemented with `HANDLER_depends` files
 
 ### What instalee is not
 - a (central) package repository containing package sources
-- a package manager that can inspect or remove packages
+- a package manager to inspect or remove packages
+- a tool to upgrade all installed packages from various sources -
+  see `topgrade`
 
 ### Planned
 - detection mechanism for handlers and features
@@ -105,6 +118,8 @@ the handler will be installed, made available and used.
 - Handler providers e.g. different make mechanisms on arch and debian
 - Run file in tempdir by default?
 - Handler for downloaded scripts (e.g. passff-host, funkwhale)
+- Ability to use multiple repos, including remote
+- Log Installs for reuse
 
 ### Windows
 - Install choco and git offline
@@ -112,21 +127,29 @@ the handler will be installed, made available and used.
 - Use choco/choco-offline sources
 
 ### Flow
-| Function       | Software       | Handler              | Provider      | System        |
-|----------------|----------------|----------------------|---------------|---------------|
-| pdf            | okular         | chocolatey           | chocolatey    | Windows       |
-|                | zathura        | arch                 | pacman or yay | Arch          |
-|                | timg poppler   | apt                  | apt           | Debian Server |
-| loki           | loki           | arch                 | pacman or yay | Arch          |
-|                |                | make                 | checkinstall  | Debian        |
-|                |                | make                 | wocka         | Arch          |
-| logcli         | loki-logcli    | script (depends: go) | script        | Debian        |
-|                |                | arch                 | pacman or yay | Arch          |
-|                | logcli-bin     | aur                  | yay           | Arch          |
-| zoom           | zoom           | deb                  | apt           | Debian        |
-|                |                | aur                  | yay           | Arch          |
-| screen-capture | spectacle peek | arch                 | pac/yay       | Arch          |
-|                | screentogif    | chocolatey           | chocolatey    | Windows       |
+This is a revamped concept that would ease setting up new devices with different systems
+by adding a mapping of functions to applications
+as well as handlers to providers.
+The following tables lists some real-world examples to consider,
+but the details still need to be fleshed out.
+
+| Function       | Package/Application | Handler              | Provider      | System        |
+|----------------|---------------------|----------------------|---------------|---------------|
+| pdf            | okular              | chocolatey           | chocolatey    | Windows       |
+|                | zathura             | arch                 | pacman or yay | Arch          |
+|                | timg poppler        | apt                  | apt           | Debian Server |
+| loki           | loki                | arch                 | pacman or yay | Arch          |
+|                |                     | make                 | checkinstall  | Debian        |
+|                |                     | make                 | wocka         | Arch          |
+| logcli         | loki-logcli         | script (depends: go) | script        | Debian        |
+|                |                     | arch                 | pacman or yay | Arch          |
+|                | logcli-bin          | aur                  | yay           | Arch          |
+| zoom           | zoom                | deb                  | apt           | Debian        |
+|                |                     | aur                  | yay           | Arch          |
+| screen-capture | spectacle peek      | arch                 | pac/yay       | Arch          |
+|                | screentogif         | chocolatey           | chocolatey    | Windows       |
+| aur            | yay                 | aur                  | makepkg       | Arch          |
+|                |                     | aur                  | yay           |               |
 
 - Software and Provider are derived from Function and Handler but can change depending on the system
   -> no way of declaring function so far, maybe via groups somehow?
