@@ -1,0 +1,2 @@
+#!/bin/sh
+powershell -Command "Start-Process 'choco' -Verb runAs -ArgumentList 'install $*'"

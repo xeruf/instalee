@@ -2,17 +2,14 @@ Param(
     [string]$Loc
 )
 
-$Delay = 2
-
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
         [Security.Principal.WindowsBuiltInRole] 'Administrator')
 )
 {
-    Write-Host "Not elevated, restarting in $Delay seconds ..."
+    Write-Host "Not elevated, restarting..."
     $Loc = Get-Location
-    Start-Sleep -Seconds $Delay
 
-    $Arguments =  @(
+    $Arguments = @(
         '-NoProfile',
         '-ExecutionPolicy Bypass',
         '-NoExit',
@@ -23,13 +20,8 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     Start-Process -FilePath PowerShell.exe -Verb RunAs -ArgumentList $Arguments
     Break
 }
-else
-{
-    Write-Host "Already elevated, exiting in $Delay seconds..."
-    Start-Sleep -Seconds $Delay
-}
 if($Loc.Length -gt 1){
-Set-Location $Loc.Substring(1,$Loc.Length-1)
+    Set-Location $Loc.Substring(1,$Loc.Length-2)
 }
 # https://github.com/lukegackle/PowerShell-Self-Elevate-Keeping-Current-Directory/blob/master/Self%20Elevate%20Keeping%20Directory.ps1
 
@@ -139,4 +131,5 @@ if (!(Test-Path $ChocoInstallPath)) {
   # TODO If offline:
   #Install-ChocolateyFromPackage 'chocolatey.0.11.2.nupkg'
 }
+choco feature enable -n allowGlobalConfirmation
 choco upgrade all
