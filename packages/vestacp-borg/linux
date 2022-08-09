@@ -1,0 +1,8 @@
+#!/bin/sh
+# https://github.com/ramirojoaquin/vestacp-borg-incremental-backups
+mkdir -p /root/scripts
+cd /root/scripts
+git clone https://github.com/ramirojoaquin/vestacp-borg-incremental-backups.git
+# mkdir -p /var/log/scripts/backup
+# TODO add cron:
+# 0 4 * * * /root/scripts/vestacp-borg-incremental-backups/backup-execute.sh > /var/log/scripts/backup/backup_`date "+\%Y-\%m-\%d"`.log 2>&1
