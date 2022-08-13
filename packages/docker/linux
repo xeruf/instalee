@@ -1,0 +1,1 @@
+wget -O- https://get.docker.com | bash

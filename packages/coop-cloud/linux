@@ -1,0 +1,2 @@
+docker swarm init
+docker network create -d overlay proxy
