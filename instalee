@@ -3,6 +3,7 @@
 ## DEFINITIONS
 name="$(basename "$0")"
 homedir="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
+handlers="$homedir/handlers.available"
 packagedir="$homedir/packages"
 
 highlight() { echo "[4m[1m$1[0m"; }
@@ -18,7 +19,7 @@ getcontent() {
 
 # Get available package entries for given package
 getentries() {
-	cat "$homedir/handlers.available" | while read handler
+	cat "$handlers" | while read handler
 	do find "$packagedir/$1/" -depth -type f -name "$handler*" | tac 2>/dev/null
 	done
 }
@@ -29,10 +30,10 @@ installpkg() {
 	local pkgs=$(getentries "$1")
 	local pkgdir="$packagedir/$1/"
 	if test -z "$pkgs"; then
-		local handlers=$(find "$pkgdir" -type f -printf "%f\n" 2>/dev/null)
-		for handler in $handlers
+		local pkghandlers=$(find "$pkgdir" -type f -printf "%f\n" 2>/dev/null)
+		for handler in $pkghandlers
 		do installpkg --quiet "$handler" &&
-				echo "$handler" >> "$homedir/handlers.available" &&
+				echo "$handler" >>"$pkghandlers" &&
 				installpkg "$1" &&
 				return $?
 		done
@@ -117,11 +118,22 @@ runinstalee() {
 	if test -f "$groupfile"
 	then for pkg in $(getcontent "$groupfile")
 		do runinstalee "$pkg" ||
-			"$homedir/handlers/$(head -1 handlers.available)/install" "$pkg"
+			"$homedir/handlers/$(head -1 "$handlers")/install" "$pkg"
+		   # TODO apply noexec to how handlers are run - via sh
 		done
 	else installpkg "$1"
 	fi
 }
+
+if ! test -f "$handlers"
+then copy="$(find "$homedir" -name "handlers.available.*" -exec sh -c "echo {} | rev | cut -d'.' -f1 | rev | xargs -i% expr $(lsb_release -s -i | tr 'A-Z' 'a-z') : % >/dev/null" \; -a -print)" &&
+		test -n "$copy" &&
+		echo "Bootstrapping available handlers from $copy" &&
+		cp "$copy" "$handlers" || {
+			echo "Missing available handlers in $handlers!"
+			exit 1
+		}
+fi
 
 exitcode=0
 while test $# -gt 0; do
