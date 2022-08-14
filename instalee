@@ -41,6 +41,7 @@ installpkg() {
 			echo "No handler available for package '$1'" >&2
 		return 2
 	fi
+	local pkg
 	for pkg in $pkgs
 	do  highlight "Installing $(echo ${pkg#$packagedir/} | sed 's|\(.*\)/|\1 via |')"
 		set -e
