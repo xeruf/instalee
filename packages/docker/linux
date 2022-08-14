@@ -1,1 +1,2 @@
-wget -O- https://get.docker.com | bash
+#!/bin/sh
+which docker || wget -O- https://get.docker.com | bash
