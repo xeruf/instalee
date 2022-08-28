@@ -1,4 +1,4 @@
-shell-tools
+shell/tools
 fd
 ripgrep
 zsh-completions
@@ -7,3 +7,4 @@ unrar
 man-pages
 base-devel
 topgrade
+wiked-diff
