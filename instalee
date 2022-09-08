@@ -2,7 +2,7 @@
 
 ## DEFINITIONS
 name="$(basename "$0")"
-homedir="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
+homedir="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(dirname $0)" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
 handlers="$homedir/handlers.available"
 packagedir="$homedir/packages"
 
@@ -11,7 +11,7 @@ destress() { echo "[2m$1[0m"; }
 
 # Get the content of a file or the output of its execution
 getcontent() {
-	if test -x "$1"
+	if test -z "$noexec" && test -x "$1"
 	then "$1"
 	else cat "$1"
 	fi
@@ -20,7 +20,7 @@ getcontent() {
 # Get available package entries for given package
 getentries() {
 	cat "$handlers" | while read handler
-	do find "$packagedir/$1/" -depth -type f -name "$handler*" | tac 2>/dev/null
+	do find "$packagedir/$1/" -depth -type f -name "$handler*" 2>/dev/null | tac
 	done
 }
 
@@ -30,7 +30,7 @@ installpkg() {
 	local pkgs=$(getentries "$1")
 	local pkgdir="$packagedir/$1/"
 	if test -z "$pkgs"; then
-		local pkghandlers=$(find "$pkgdir" -type f -printf "%f\n" 2>/dev/null)
+		local pkghandlers="$(find "$pkgdir" -type f -printf "%f\n" 2>/dev/null)"
 		for handler in $pkghandlers
 		do installpkg --quiet "$handler" &&
 				echo "$handler" >>"$pkghandlers" &&
@@ -43,7 +43,7 @@ installpkg() {
 	fi
 	local pkg
 	for pkg in $pkgs
-	do  highlight "Installing $(echo ${pkg#$packagedir/} | sed 's|\(.*\)/|\1 via |')"
+	do	highlight "Installing $(echo ${pkg#$packagedir/} | sed 's|\(.*\)/|\1 via |')"
 		set -e
 		local name="$(basename $pkg)"
 		local base="${name%_*}"
@@ -95,14 +95,14 @@ case "$1" in
 		mkdir -p "$dir"
 		if test $# -gt 0
 		then handler=$1
-			 test $# -gt 1 && echo "$2">"$dir/$handler" || $EDITOR "$dir/$handler"
+			 test $# -gt 1 && echo "$2">"$dir/$handler" || ${EDITOR:-vi} "$dir/$handler"
 			 exit $?
 		else
 			while printf "Handler? (Ctrl-C or Ctrl-D to exit, / to list all) " && read handler
 			do
 				case "$handler" in
 				(/*) find "$packagedir" "$homedir/handlers" -type f -not -name "*depends" -printf "%f\n" | sort | uniq | paste -s -d ' ';;
-				(*) $EDITOR "$dir/$handler";;
+				(*) ${EDITOR:-vi} "$dir/$handler";;
 				esac
 			done
 			exit 0
@@ -112,15 +112,21 @@ case "$1" in
 		set -x
 		shift
 		;;
+	(-x|--noexec)
+		noexec=true
+		shift
+		;;
 esac
 
 runinstalee() {
 	groupfile="$homedir/groups/$1"
 	if test -f "$groupfile"
 	then for pkg in $(getcontent "$groupfile")
-		do runinstalee "$pkg" ||
+		do if ! runinstalee "$pkg"
+		then highlight "Attempting install of $pkg via default handler"
 			"$homedir/handlers/$(head -1 "$handlers")/install" "$pkg"
-		   # TODO apply noexec to how handlers are run - via sh
+			# TODO apply noexec to how handlers are run - via sh
+		fi
 		done
 	else installpkg "$1"
 	fi
