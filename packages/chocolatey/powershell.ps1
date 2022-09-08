@@ -6,19 +6,18 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
         [Security.Principal.WindowsBuiltInRole] 'Administrator')
 )
 {
-    Write-Host "Not elevated, restarting..."
+    Write-Host "Not elevated, relaunching $($MyInvocation.MyCommand.Path)..."
     $Loc = Get-Location
 
     $Arguments = @(
         '-NoProfile',
         '-ExecutionPolicy Bypass',
-        '-NoExit',
         '-File',
         "`"$($MyInvocation.MyCommand.Path)`"",
         "\`"$Loc\`""
     )
-    Start-Process -FilePath PowerShell.exe -Verb RunAs -ArgumentList $Arguments
-    Break
+    Start-Process -Wait -FilePath PowerShell.exe -Verb RunAs -ArgumentList $Arguments
+    Return
 }
 if($Loc.Length -gt 1){
     Set-Location $Loc.Substring(1,$Loc.Length-2)
