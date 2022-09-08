@@ -1,6 +1,4 @@
-win/tweaker
-win/office
 dev/tools
-forensics
-etcher
+shell/tools
 passwords
+forensics
