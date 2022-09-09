@@ -47,12 +47,14 @@ installpkg() {
 		set -e
 		local name="$(basename $pkg)"
 		local base="${name%_*}"
+		echo "[1mDependencies[0m"
 		for dependency in $(cat "${pkgdir}depends" "${pkgdir}${base}_depends" 2>/dev/null)
-		do runinstalee $dependency
+		do runinstalee $dependency | sed 's/^/ /'
 		done
 
 		local ext="${name#$base}"
 		local handler="$homedir/handlers/$base"
+		cd $(mktemp -d --tmpdir=$execdir $pkg.XXXX)
 		if test -d "$handler"
 		then
 			# This declaration needs to be ahead, otherwise it overrides failing exit codes
@@ -118,6 +120,9 @@ case "$1" in
 		;;
 esac
 
+execdir=/tmp/instalee.%(date +%s)
+mkdir -p $execdir
+cd $execdir
 runinstalee() {
 	groupfile="$homedir/groups/$1"
 	if test -f "$groupfile"

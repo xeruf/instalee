@@ -1,5 +1,4 @@
-#!/usr/bin/env sh
-cd "$(mktemp -d)"
+#!/bin/sh -e
 git clone https://github.com/nonpop/xkblayout-state
 cd xkblayout-state
 make

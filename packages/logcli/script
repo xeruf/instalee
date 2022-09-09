@@ -1,5 +1,4 @@
 #!/bin/sh -e
-cd "$(mktemp -d)"
 git clone https://github.com/grafana/loki.git
 cd loki
 make logcli >&2

@@ -1,6 +1,7 @@
-#!/usr/bin/env sh
+#!/bin/sh
 cd /opt
 git clone git://github.com/sickill/stderred.git
 cd stderred
 make
-case "$LD_PRELOAD" in *libstderred.so*) ;; *) echo 'export LD_PRELOAD="/opt/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"'>>$HOME/.zprofile;; esac
+case "$LD_PRELOAD" in (*libstderred.so*) ;;
+                      (*) echo 'export LD_PRELOAD="/opt/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"'>>$HOME/.zprofile;; esac
