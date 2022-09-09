@@ -1,6 +1,6 @@
 #!/bin/sh
 # https://stackoverflow.com/questions/43650595/is-there-a-command-to-check-if-git-bash-is-opened-in-administrator-mode/58846650#58846650
 if [[ $(sfc 2>&1 | tr -d '\0') =~ SCANNOW ]]
-then choco install "$@"
+then choco install --limit-output "$@"
 else exec powershell -Command "Start-Process 'choco' -Verb runAs -ArgumentList 'install $*'"
 fi
