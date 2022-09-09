@@ -2,7 +2,8 @@
 
 ## DEFINITIONS
 name="$(basename "$0")"
-homedir="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(dirname $0)" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
+self="$(realpath "$0")"
+homedir="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(dirname "$0")" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
 handlers="$homedir/handlers.available"
 packagedir="$homedir/packages"
 
@@ -74,8 +75,8 @@ installpkg() {
 }
 
 ## EXECUTION
-chmod +rx "$homedir/handlers" -R
 
+# TODO getopt
 case "$1" in
 	(-V|--version|"")
 		printf "$name r%s.%s\n" "$(git rev-list --count HEAD 2>/dev/null)" "$(git rev-parse --short HEAD 2>/dev/null)"
@@ -110,30 +111,26 @@ case "$1" in
 			exit 0
 		fi
 		;;
-	(-v|--verbose)
-		set -x
-		shift
-		;;
-	(-x|--noexec)
-		noexec=true
-		shift
-		;;
+	(-v|--verbose) set -x; shift;;
+	(-d|--default) default=true; shift;;
+	(-x|--noexec) noexec=true; shift;;
 esac
+noexec=true
 
-execdir=/tmp/instalee.%(date +%s)
-mkdir -p $execdir
-cd $execdir
+installdefault() {
+	local defaulthandler="$(head -1 "$handlers")"
+	highlight "Attempting install of $1 via default handler"
+	$(test "$noexec" && echo "sh") "$homedir/handlers/$defaulthandler/install" "$1" &&
+		$(test "$noexec" && echo "sh") "$self" --add "$1" "$defaulthandler" ""
+}
+
 runinstalee() {
-	groupfile="$homedir/groups/$1"
+	local groupfile="$homedir/groups/$1"
 	if test -f "$groupfile"
 	then for pkg in $(getcontent "$groupfile")
-		do if ! runinstalee "$pkg"
-		then highlight "Attempting install of $pkg via default handler"
-			"$homedir/handlers/$(head -1 "$handlers")/install" "$pkg"
-			# TODO apply noexec to how handlers are run - via sh
-		fi
+		do runinstalee "$pkg" || installdefault "$pkg"
 		done
-	else installpkg "$1"
+	else installpkg "$1" || { test "$default" && installdefault "$1"; }
 	fi
 }
 
@@ -146,6 +143,12 @@ then copy="$(find "$homedir" -name "handlers.available.*" -exec sh -c "echo {} |
 			exit 1
 		}
 fi
+
+chmod +rx "$homedir/handlers" -R
+
+execdir=/tmp/instalee.$(date +%s)
+mkdir -p $execdir
+cd $execdir
 
 exitcode=0
 while test $# -gt 0; do
