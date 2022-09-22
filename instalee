@@ -3,9 +3,9 @@
 ## DEFINITIONS
 name="$(basename "$0")"
 self="$(realpath "$0")"
-homedir="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(dirname "$0")" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
-handlers="$homedir/handlers.available"
-packagedir="$homedir/packages"
+dir_home="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(realpath "$(dirname "$0")")" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
+handlers="$dir_home/handlers.available"
+dir_packages="$dir_home/packages"
 
 highlight() { echo "[4m[1m$1[0m"; }
 destress() { echo "[2m$1[0m"; }
@@ -21,17 +21,17 @@ getcontent() {
 # Get available package entries for given package
 getentries() {
 	cat "$handlers" | while read handler
-	do find "$packagedir/$1/" -depth -type f -name "$handler*" 2>/dev/null | tac
+	do find "$dir_packages/$1/" -depth -type f -name "$handler*" 2>/dev/null | tac
 	done
 }
 
 # Install a package by name
 installpkg() {
 	test "$1" = "--quiet" && local quiet=true && shift
-	local pkgs=$(getentries "$1")
-	local pkgdir="$packagedir/$1/"
-	if test -z "$pkgs"; then
-		local pkghandlers="$(find "$pkgdir" -type f -printf "%f\n" 2>/dev/null)"
+	local package_available_entries=$(getentries "$1")
+	local dir_package="$dir_packages/$1/"
+	if test -z "$package_available_entries"; then
+		local pkghandlers="$(find "$dir_package" -type f -printf "%f\n" 2>/dev/null)"
 		for handler in $pkghandlers
 		do installpkg --quiet "$handler" &&
 				echo "$handler" >>"$pkghandlers" &&
@@ -42,33 +42,33 @@ installpkg() {
 			echo "No handler available for package '$1'" >&2
 		return 2
 	fi
-	local pkg
-	for pkg in $pkgs
-	do	highlight "Installing $(echo ${pkg#$packagedir/} | sed 's|\(.*\)/|\1 via |')"
+	local pkg_entry
+	for pkg_entry in $package_available_entries
+	do	highlight "Installing $(echo ${pkg_entry#$dir_packages/} | sed 's|\(.*\)/|\1 via |')"
 		set -e
-		local name="$(basename $pkg)"
+		local name="$(basename $pkg_entry)"
 		local base="${name%_*}"
 		echo "[1mDependencies[0m"
-		for dependency in $(cat "${pkgdir}depends" "${pkgdir}${base}_depends" 2>/dev/null)
+		for dependency in $(cat "${dir_package}depends" "${dir_package}${base}_depends" 2>/dev/null)
 		do runinstalee $dependency | sed 's/^/ /'
 		done
 
 		local ext="${name#$base}"
-		local handler="$homedir/handlers/$base"
-		cd $(mktemp -d --tmpdir=$execdir $pkg.XXXX)
+		local handler="$dir_home/handlers/$base"
+		cd "$(mktemp -d --tmpdir=$execdir "$(basename $pkg_entry).XXXX")"
 		if test -d "$handler"
 		then
 			# This declaration needs to be ahead, otherwise it overrides failing exit codes
 			local args
 			local install
-			args="$(getcontent "$pkg")"
+			args="$(getcontent "$pkg_entry")"
 			args="${args:-$1}"
 			install="$(find "$handler" -name "install$ext" | head -1)"
 			destress " $install $args"
 			$install $args
 		else
-			destress " running unhandled $pkg"
-			$pkg
+			destress " running unhandled $pkg_entry"
+			$pkg_entry
 		fi
 		break
 	done
@@ -85,7 +85,7 @@ case "$1" in
 		exit 0
 		;;
 	(-h|--help)
-		man $name 2>/dev/null || man "$homedir/$name.1"
+		man $name 2>/dev/null || man "$dir_home/$name.1"
 		exit $?
 		;;
 	(-a|--add)
@@ -94,7 +94,7 @@ case "$1" in
 		then packagename=$1; shift
 		else printf "Name of the package? "; read packagename
 		fi
-		dir="$packagedir/$packagename"
+		dir="$dir_packages/$packagename"
 		mkdir -p "$dir"
 		if test $# -gt 0
 		then handler=$1
@@ -104,7 +104,7 @@ case "$1" in
 			while printf "Handler? (Ctrl-C or Ctrl-D to exit, / to list all) " && read handler
 			do
 				case "$handler" in
-				(/*) find "$packagedir" "$homedir/handlers" -type f -not -name "*depends" -printf "%f\n" | sort | uniq | paste -s -d ' ';;
+				(/*) find "$dir_packages" "$dir_home/handlers" -type f -not -name "*depends" -printf "%f\n" | sort | uniq | paste -s -d ' ';;
 				(*) ${EDITOR:-vi} "$dir/$handler";;
 				esac
 			done
@@ -120,22 +120,22 @@ noexec=true
 installdefault() {
 	local defaulthandler="$(head -1 "$handlers")"
 	highlight "Attempting install of $1 via default handler"
-	$(test "$noexec" && echo "sh") "$homedir/handlers/$defaulthandler/install" "$1" &&
+	$(test "$noexec" && echo "sh") "$dir_home/handlers/$defaulthandler/install" "$1" &&
 		$(test "$noexec" && echo "sh") "$self" --add "$1" "$defaulthandler" ""
 }
 
 runinstalee() {
-	local groupfile="$homedir/groups/$1"
+	local groupfile="$dir_home/groups/$1"
 	if test -f "$groupfile"
-	then for pkg in $(getcontent "$groupfile")
-		do runinstalee "$pkg" || installdefault "$pkg"
+	then for package in $(getcontent "$groupfile")
+		do runinstalee "$package" || installdefault "$package"
 		done
 	else installpkg "$1" || { test "$default" && installdefault "$1"; }
 	fi
 }
 
 if ! test -f "$handlers"
-then copy="$(find "$homedir" -name "handlers.available.*" -exec sh -c "echo {} | rev | cut -d'.' -f1 | rev | xargs -i% expr $(lsb_release -s -i | tr 'A-Z' 'a-z') : % >/dev/null" \; -a -print)" &&
+then copy="$(find "$dir_home" -name "handlers.available.*" -exec sh -c "echo {} | rev | cut -d'.' -f1 | rev | xargs -i% expr $(lsb_release -s -i | tr 'A-Z' 'a-z') : % >/dev/null" \; -a -print)" &&
 		test -n "$copy" &&
 		echo "Bootstrapping available handlers from $copy" &&
 		cp "$copy" "$handlers" || {
@@ -144,7 +144,7 @@ then copy="$(find "$homedir" -name "handlers.available.*" -exec sh -c "echo {} |
 		}
 fi
 
-chmod +rx "$homedir/handlers" -R
+chmod +rx "$dir_home/handlers" -R
 
 execdir=/tmp/instalee.$(date +%s)
 mkdir -p $execdir
