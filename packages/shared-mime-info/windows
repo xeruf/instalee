@@ -1,0 +1,9 @@
+#!/bin/sh -e
+test -f "$FREEDESKTOP_MIME_TYPES_PATH" && exit 0
+cd "C:\\ProgramData\\"
+version=2.2
+name="shared-mime-info-$version"
+curl https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/$version/$name.zip >"$name.zip"
+7z x -y "$name.zip" || unzip "$name.zip"
+setx FREEDESKTOP_MIME_TYPES_PATH "C:\\ProgramData\\$name\\data\\freedesktop.org.xml.in"
+rm -v "$name.zip"
