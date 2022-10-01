@@ -7,8 +7,8 @@ dir_home="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HO
 handlers="$dir_home/handlers.available"
 dir_packages="$dir_home/packages"
 
-highlight() { echo "[4m[1m$1[0m"; }
-destress() { echo "[2m$1[0m"; }
+highlight() { echo "[4m[1m$1[0m" >&2; }
+destress() { echo "[2m$1[0m" >&2; }
 
 # Get the content of a file or the output of its execution
 getcontent() {
@@ -28,8 +28,8 @@ getentries() {
 # Install a package by name
 installpkg() {
 	test "$1" = "--quiet" && local quiet=true && shift
-	local package_available_entries=$(getentries "$1")
 	local dir_package="$dir_packages/$1/"
+	test -d "$dir_package" && local package_available_entries=$(getentries "$1")
 	if test -z "$package_available_entries"; then
 		local pkghandlers="$(find "$dir_package" -type f -printf "%f\n" 2>/dev/null)"
 		for handler in $pkghandlers
@@ -48,7 +48,7 @@ installpkg() {
 		set -e
 		local name="$(basename $pkg_entry)"
 		local base="${name%_*}"
-		echo "[1mDependencies[0m"
+		echo "[1mDependencies[0m" >&2
 		for dependency in $(cat "${dir_package}depends" "${dir_package}${base}_depends" 2>/dev/null)
 		do runinstalee $dependency | sed 's/^/ /'
 		done
@@ -80,7 +80,7 @@ installpkg() {
 case "$1" in
 	(-V|--version|"")
 		printf "$name r%s.%s\n" "$(git rev-list --count HEAD 2>/dev/null)" "$(git rev-parse --short HEAD 2>/dev/null)"
-		echo "Try '$0 --help' or 'man $name' for usage info"
+		echo "Try '$0 --help' or 'man $name' for usage info" >&2
 		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
 		exit 0
 		;;
@@ -88,8 +88,23 @@ case "$1" in
 		man $name 2>/dev/null || man "$dir_home/$name.1"
 		exit $?
 		;;
-	(-a|--add)
+	(-v|--verbose) set -x; shift;;
+	(-d|--default) default=true; shift;;
+	(-x|--noexec) noexec=true; shift;;
+	(-a|--add*)
+		action=$1
 		shift
+		case "$action" in
+		(*=group) ${EDITOR:-vi} "$dir_home/groups/$1"; exit $?;;
+		(*=handler)
+			file="$dir_home/handlers/$1/install"
+			if ! test -f "$file"; then
+				mkdir -p "$(dirname "$file")"
+				printf "#!/bin/sh -e\n$1 install "'"$@"' >"$file"
+			fi
+			${EDITOR:-vi} "$file"
+			exit $?;;
+		esac
 		if test $# -gt 0
 		then packagename=$1; shift
 		else printf "Name of the package? "; read packagename
@@ -111,17 +126,15 @@ case "$1" in
 			exit 0
 		fi
 		;;
-	(-v|--verbose) set -x; shift;;
-	(-d|--default) default=true; shift;;
-	(-x|--noexec) noexec=true; shift;;
 esac
 noexec=true
 
 installdefault() {
 	local defaulthandler="$(head -1 "$handlers")"
-	highlight "Attempting install of $1 via default handler"
+	highlight "Attempting install of '$1' via default handler '$defaulthandler'"
 	$(test "$noexec" && echo "sh") "$dir_home/handlers/$defaulthandler/install" "$1" &&
-		$(test "$noexec" && echo "sh") "$self" --add "$1" "$defaulthandler" ""
+		$(test "$noexec" && echo "sh") "$self" --add "$1" "$defaulthandler" "" &&
+		echo "Added package entry for '$1' via '$defaulthandler'" >&2
 }
 
 runinstalee() {
@@ -139,7 +152,7 @@ then copy="$(find "$dir_home" -name "handlers.available.*" -exec sh -c "echo {} 
 		test -n "$copy" &&
 		echo "Bootstrapping available handlers from $copy" &&
 		cp "$copy" "$handlers" || {
-			echo "Missing available handlers in $handlers!"
+			echo "Missing available handlers in $handlers!" >&2
 			exit 1
 		}
 fi
