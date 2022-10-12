@@ -70,6 +70,7 @@ installpkg() {
 			destress " running unhandled $pkg_entry"
 			$pkg_entry
 		fi
+		set +e
 		break
 	done
 }
