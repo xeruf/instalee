@@ -1,0 +1,2 @@
+#!/bin/sh
+curl -sS https://webi.sh/k9s | sh

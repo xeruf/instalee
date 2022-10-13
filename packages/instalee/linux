@@ -1,16 +1,15 @@
-#!/bin/sh
-set -eo pipefail
+#!/bin/sh -e
 # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=instalee-git
 _pkgname='instalee'
-cd "$(readlink /proc/$(ps -o ppid= $(ps -o ppid= $PPID) | tr -d ' ')/cwd || $dir_home)"
-pkgdir=/tmp
+cd "$(readlink /proc/$(ps -o ppid= $PPID | tr -d ' ')/cwd || $dir_home)"
+#cd "$(readlink /proc/$(ps -o ppid= $(ps -o ppid= $PPID) | tr -d ' ')/cwd || $dir_home)"
 usrdir="${pkgdir}/usr/local"
 bin="${usrdir}/bin"
 sudo install -D --target-directory "${usrdir}/share/doc/${_pkgname}/" *.md
 sudo install -D --target-directory "${usrdir}/share/man/man1/" "${_pkgname}.1"
 sudo install -D --target-directory "$bin" "${_pkgname}"
 
-pkgver="$(git describe --long --tags 2>/dev/null | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g' || printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)")"
+pkgver="$({ git describe --long --tags 2>/dev/null || printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"; } | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g' )"
 sudo sed -i "s/r%s.%s/version ${pkgver}/" "$bin/${_pkgname}"
 
 echo -n "Installed "
