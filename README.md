@@ -135,11 +135,12 @@ and ideas that need to be fleshed out.
 ### Planned
 - detection mechanism for handlers and features
   (e.g. whether they support batching)
+- Ability to use multiple repos, including remote ones
+- Handle missing versions in older os version repos
+
 - helper/hook for adding packages to groups upon install
   (at least for `pacman`)
-- Ability to use multiple repos, including remote
 - Log Installs for reuse
-- AUR: Install man-page, Readme to /usr/share/doc
 
 ### Random TODOs
 - Debug corner cases
@@ -147,10 +148,10 @@ and ideas that need to be fleshed out.
 - Run file in tempdir by default?
 - Handler for downloaded scripts (e.g. passff-host, funkwhale)
 
-#### Windows
+#### Windows Flow
 - Install choco and git offline
 - Run in git bash
-- Use choco/choco-offline sources
+- TODO: Use choco-offline sources
 
 ### Flow
 This is a revamped concept 

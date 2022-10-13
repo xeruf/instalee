@@ -3,7 +3,7 @@
 ## DEFINITIONS
 name="$(basename "$0")"
 self="$(realpath "$0")"
-dir_home="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(realpath "$(dirname "$0")")" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
+export dir_home="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(realpath "$(dirname "$0")")" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
 handlers="$dir_home/handlers.available"
 dir_packages="$dir_home/packages"
 
@@ -55,7 +55,6 @@ installpkg() {
 
 		local ext="${name#$base}"
 		local handler="$dir_home/handlers/$base"
-		cd "$(mktemp -d --tmpdir=$execdir "$(basename $pkg_entry).XXXX")"
 		if test -d "$handler"
 		then
 			# This declaration needs to be ahead, otherwise it overrides failing exit codes
@@ -65,11 +64,11 @@ installpkg() {
 			args="${args:-$1}"
 			install="$(find "$handler" -name "install$ext" | head -1)"
 			destress " $install $args"
-			$install $args
+			pkg_entry="$install $args"
 		else
 			destress " running unhandled $pkg_entry"
-			$pkg_entry
 		fi
+		(cd "$(mktemp -d --tmpdir=$execdir "$(basename $pkg_entry).XXXX")"; $pkg_entry)
 		set +e
 		break
 	done
@@ -163,6 +162,7 @@ chmod +rx "$dir_home/handlers" -R
 execdir=/tmp/instalee.$(date +%s)
 mkdir -p $execdir
 cd $execdir
+destress "Running in $execdir"
 
 exitcode=0
 while test $# -gt 0; do
