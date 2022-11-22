@@ -8,7 +8,7 @@ Central feature is the modular directory structure
 that can handle everything from native package managers 
 over installation from source
 to copying or executing scripts from a URL.
-Similar as in [tldr](https://github.com/tldr-pages/tldr),
+Similar to [tldr](https://github.com/tldr-pages/tldr),
 creating alternative frontends is easy and appreciated.
 
 Instalee can install the same set of packages on any system
@@ -193,3 +193,11 @@ but the details still need to be fleshed out.
   + underscore extension might be superfluous through that, since `ext` was somewhat a proxy for a proper `provider` configuraion
 - Use system subdirectories for handlers and groups,
   which are used by default when system is detected
+
+## Notable Projects
+
+- another universal package manager,
+  but without affecting the system:
+  https://github.com/teaxyz/cli
+- universal package updater:
+  https://github.com/topgrade-rs/topgrade
