@@ -35,12 +35,14 @@ installpkg() {
 		for handler in $pkghandlers
 		do installpkg --quiet "$handler" &&
 				echo "$handler" >>"$pkghandlers" &&
-				installpkg "$1" &&
-				return $?
+				package_available_entries=$(getentries "$1") &&
+				break
 		done
-		test "$quiet" ||
-			echo "No handler available for package '$1'" >&2
-		return 2
+		if test -z "$package_available_entries"; then
+			test "$quiet" ||
+				echo "No handler available for package '$1'" >&2
+			return 2
+		fi
 	fi
 	local pkg_entry
 	for pkg_entry in $package_available_entries
