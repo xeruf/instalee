@@ -1,4 +1,4 @@
 #!/bin/sh
 emacsd="${XDG_CONFIG_HOME:-$HOME/.config}/emacs"
 git clone https://github.com/hlissner/doom-emacs "$emacsd"
-"$emacsd" install
+"$emacsd/bin/doom" install
