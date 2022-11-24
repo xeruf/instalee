@@ -1,0 +1,9 @@
+#!/bin/sh -e
+# Inspired by https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=udefrag
+name="ultradefrag-5.0.0AB.8"
+zip="$name.zip"
+wget --no-verbose "http://jp-andre.pagesperso-orange.fr/$zip"
+unzip "$zip"
+cd "$name/src"
+make
+cp udefrag /usr/local/bin

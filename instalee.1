@@ -1,7 +1,7 @@
 .\" Manpage for instalee - https://git.jfischer.org/xeruf/instalee
 .\" Contact 27jf@pm.me for improvements.
 
-.TH man 1 "06 May 2020" "0.1" "instalee man page"
+.TH man 1 "22 Nov 2022" "0.1" "instalee man page"
 
 .SH NAME
 
@@ -17,11 +17,32 @@ instalee - Unix-style universal package management wrapper
 
 .SH DESCRIPTION
 
-instalee provides a generic interface for installing packages.
-Instead of knowing it all, it relies on the user configuring it to his needs while itself being as dumb as possible.
+Instalee provides a generic interface for installing packages.
+It relies on the user configuring it to pers needs, keeping the core logic as simple as possible.
 
-Its configuration resides in a folder defaulting to XDG_CONFIG_HOME/instalee.
-It contains a \fIhandlers\fP and \fIpackages\fP directory and the \fIhandlers.available\fP file.
+Use it to set up servers as well as temporary and permanent computers to your needs across operating systems.
+
+.SH OPTIONS
+
+.TP
+<packagename>
+The package. Corresponds to a directory in \fIpackages\fP.
+.TP
+-a|--add
+Add a package entry to the repo. Will prompt for missing arguments.
+.TP
+<identifier>
+Name of the packager for which this entry is meant, 
+including potential pre- and suffixes.
+.TP
+<content>
+Content of the file for the package to be added.
+If omitted, the file is opened with $EDITOR.
+Note that the parent directory already exists by then, but the file does not.
+
+.SH SETUP
+
+Instalee requires a CONFIGURATION DIRECTORY containing a \fIhandlers\fP and \fIpackages\fP directory and the \fIhandlers.available\fP file.
 
 The \fIhandlers\fP directory contains a directory for each package manager.
 Usually you will only need to create a directory for the package manager and then an \fIinstall\fP file that processes packages.
@@ -47,22 +68,22 @@ There are three options for this file, and the result determines the arguments t
 
 If a \fIhandler\fP is available without entry in \fIhandlers\fP (commonly named after what it requires as/on the system), package files for that handler will be executed without invoking a handler. Such a package file must be executable.
 
-.SH OPTIONS
-.TP
-<packagename>
-The package. Corresponds to a directory in \fIpackages\fP.
-.TP
--a|--add
-Add a package entry to the repo. Will prompt for missing arguments.
-.TP
-<identifier>
-Name of the packager for which this entry is meant, 
-including potential pre- and suffixes.
-.TP
-<content>
-Content of the file for the package to be added.
-If omitted, the file is opened with $EDITOR.
-Note that the parent directory already exists by then, but the file does not.
+.SH CONFIGURATION DIRECTORY
+
+Instalee is configured through a folder defaulting to XDG_CONFIG_HOME/instalee, if that does not exist it will try to use the current working directory or the directory of the executable.
+
+The following locations are tried, in that order:
+- INSTALEE_HOME
+- XDG_CONFIG_HOME/instalee
+- HOME/.instalee
+- Directory of the executable (thus installation to /opt or portable locations is also easily imaginable)
+- Current working directory
+
+.SH PACKAGING
+
+- Ensure an executable entry processed by a handler does not accidentally print to stdout
+- Link an upstream source for scripts if possible
+- Try to stick to "/bin/sh -e" as shebang, requiring bash only if needed
 
 .SH EXIT CODES
 
@@ -80,7 +101,7 @@ Could not install all packages
 
 Exhaustive testing is missing everywhere :)
 Please report issues on https://github.com/xeruf/instalee/issues
-(note: hosting service is subject to change soon)
+(note: forge is subject to change)
 
 .SH AUTHOR
 

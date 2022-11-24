@@ -1,9 +1,14 @@
-#!/bin/sh
+#!/bin/sh -e
 # Install a package from a local or downloaded .deb-file and remove it
-loc="$(basename "$arg")"
+# Can also infer a latest github release
+loc="$(basename "$1")"
 case "$1" in
-  (http*) wget -O "$loc" "$arg";;
-  (*) loc="$arg";;
+	(http*) wget --no-verbose -O "$loc" "$@";;
+	(*.deb) loc="$1";;
+	(git*) domain="$1"; shift
+		result=$(curl -s "https://api.$domain/repos/$1/$2/releases/latest" | grep -o "http.*${3:-deb}" | awk '{ print length(), $0}' | sort -n | cut -d' ' -f2-)
+		"$0" $(echo "$result" | command grep amd64 | head -1 || echo "$result")
+		exit $?;;
 esac
 sudo dpkg -i "$loc"
 sudo apt -f install

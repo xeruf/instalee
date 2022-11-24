@@ -3,8 +3,8 @@
 ## DEFINITIONS
 name="$(basename "$0")"
 self="$(realpath "$0")"
-export dir_home="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(realpath "$(dirname "$0")")" "$PWD" -maxdepth 0 2>/dev/null | head -1)"
-handlers="$dir_home/handlers.available"
+handlersfile="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(realpath "$(dirname "$0")")" "$PWD" -maxdepth 1 -name "handlers.available*" 2>/dev/null | head -1)"
+export dir_home="$(dirname "$handlersfile")"
 dir_packages="$dir_home/packages"
 
 highlight() { echo "[4m[1m$1[0m" >&2; }
@@ -20,7 +20,7 @@ getcontent() {
 
 # Get available package entries for given package
 getentries() {
-	cat "$handlers" | while read handler
+	cat "$handlersfile" | while read handler
 	do find "$dir_packages/$1/" -depth -type f -name "$handler*" 2>/dev/null | tac
 	done
 }
@@ -29,7 +29,8 @@ getentries() {
 installpkg() {
 	test "$1" = "--quiet" && local quiet=true && shift
 	local dir_package="$dir_packages/$1/"
-	test -d "$dir_package" && local package_available_entries=$(getentries "$1")
+	# prefer unsuffixed entries, i.e. sort by length
+	test -d "$dir_package" && local package_available_entries="$(getentries "$1")"
 	if test -z "$package_available_entries"; then
 		local pkghandlers="$(find "$dir_package" -type f -printf "%f\n" 2>/dev/null)"
 		for handler in $pkghandlers
@@ -57,6 +58,7 @@ installpkg() {
 
 		local ext="${name#$base}"
 		local handler="$dir_home/handlers/$base"
+		(cd "$(mktemp -d --tmpdir=$execdir "$name.XXXX")"
 		if test -d "$handler"
 		then
 			# This declaration needs to be ahead, otherwise it overrides failing exit codes
@@ -70,7 +72,8 @@ installpkg() {
 		else
 			destress " running unhandled $pkg_entry"
 		fi
-		(cd "$(mktemp -d --tmpdir=$execdir "$(basename $pkg_entry).XXXX")"; $pkg_entry)
+		$pkg_entry
+		)
 		set +e
 		break
 	done
@@ -81,7 +84,7 @@ installpkg() {
 # TODO getopt
 case "$1" in
 	(-V|--version|"")
-		printf "$name r%s.%s\n" "$(git rev-list --count HEAD 2>/dev/null)" "$(git rev-parse --short HEAD 2>/dev/null)"
+		printf "$name r%s.%s%s\n" "$(git rev-list --count HEAD 2>/dev/null)" "$(git rev-parse --short HEAD 2>/dev/null)" "$(git diff-index HEAD | wc -l | sed 's|^[1-9]|-mod\0|')"
 		echo "Try '$0 --help' or 'man $name' for usage info" >&2
 		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
 		exit 0
@@ -90,7 +93,7 @@ case "$1" in
 		man $name 2>/dev/null || man "$dir_home/$name.1"
 		exit $?
 		;;
-	(-v|--verbose) set -x; shift;;
+	(-v|--verbose) set -x; export INSTALEE_VERBOSE=10; shift;;
 	(-d|--default) default=true; shift;;
 	(-x|--noexec) noexec=true; shift;;
 	(-a|--add*)
@@ -129,10 +132,9 @@ case "$1" in
 		fi
 		;;
 esac
-noexec=true
 
 installdefault() {
-	local defaulthandler="$(head -1 "$handlers")"
+	local defaulthandler="$(head -1 "$handlersfile")"
 	highlight "Attempting install of '$1' via default handler '$defaulthandler'"
 	$(test "$noexec" && echo "sh") "$dir_home/handlers/$defaulthandler/install" "$1" &&
 		$(test "$noexec" && echo "sh") "$self" --add "$1" "$defaulthandler" "" &&
@@ -150,12 +152,12 @@ runinstalee() {
 }
 
 # TODO Manjaro
-if ! test -f "$handlers"
+if ! test -f "$handlersfile"
 then copy="$(find "$dir_home" -name "handlers.available.*" -exec sh -c "echo {} | rev | cut -d'.' -f1 | rev | xargs -i% expr $(lsb_release -s -i | tr 'A-Z' 'a-z' || cat /etc/os-release | grep '^ID=' | cut -d= -f2) : % >/dev/null" \; -a -print)" &&
 		test -n "$copy" &&
 		echo "Bootstrapping available handlers from $copy" &&
-		cp "$copy" "$handlers" || {
-			echo "Missing available handlers in $handlers!" >&2
+		cp "$copy" "$handlersfile" || {
+			echo "Missing available handlers in $handlersfile!" >&2
 			exit 1
 		}
 fi
@@ -167,10 +169,12 @@ mkdir -p $execdir
 cd $execdir
 destress "Running in $execdir"
 
+export INSTALEE_VERBOSE="${INSTALEE_VERBOSE:-2}"
 exitcode=0
 while test $# -gt 0; do
 	runinstalee "$1"
 	exitcode=$(expr $exitcode \| $?)
 	shift
 done
+case $- in (*x*) $(which tree && echo " -L" || echo "find -maxdepth") 3 "$execdir";; esac
 exit $exitcode

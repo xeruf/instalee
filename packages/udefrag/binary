@@ -1,0 +1,3 @@
+wget --no-verbose https://easy2boot.xyz/wp-content/uploads/2021/04/udefrag.zip
+unzip udefrag.zip >&2
+echo udefrag
