@@ -3,8 +3,8 @@
 ## DEFINITIONS
 name="$(basename "$0")"
 self="$(realpath "$0")"
-handlersfile="$(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(realpath "$(dirname "$0")")" "$PWD" -maxdepth 1 -name "handlers.available*" 2>/dev/null | head -1)"
-export dir_home="$(dirname "$handlersfile")"
+export dir_home="$(dirname $(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(realpath "$(dirname "$0")")" "$PWD" -maxdepth 1 -name "handlers.available*" 2>/dev/null | head -1))"
+handlersfile="$dir_home/handlers.available"
 dir_packages="$dir_home/packages"
 
 highlight() { echo "[4m[1m$1[0m" >&2; }

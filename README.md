@@ -147,6 +147,7 @@ and ideas that need to be fleshed out.
 - Handler preparation - update repos and cache last update time in /tmp
 - Run file in tempdir by default?
 - Handler for downloaded scripts (e.g. passff-host, funkwhale)
+- Enable services after install, e.g. syncthing and docker
 
 #### Windows Flow
 - Install choco and git offline
