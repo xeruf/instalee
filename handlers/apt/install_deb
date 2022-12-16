@@ -11,5 +11,5 @@ case "$1" in
 		exit $?;;
 esac
 sudo dpkg -i "$loc"
-sudo apt -f install
+sudo apt-get -f install
 sudo rm -v "$loc"

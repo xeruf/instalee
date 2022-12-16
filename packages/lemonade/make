@@ -1,0 +1,4 @@
+#!/bin/sh
+# https://github.com/lemonade-command/lemonade#installation
+go get -d github.com/lemonade-command/lemonade
+echo "$GOPATH/src/github.com/lemonade-command/lemonade/"
