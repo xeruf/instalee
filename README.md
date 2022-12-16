@@ -195,6 +195,18 @@ but the details still need to be fleshed out.
 - Use system subdirectories for handlers and groups,
   which are used by default when system is detected
 
+## Notes on this Repository
+
+### Groups
+
+- shell/basics: without these a linux machine is hardly usable
+- shell/tools: without these, a linux computer is not productively usable for me
+- shell/enhancements: replacements for commonly used, dated tools, such as `ls`->`exa` and `top`->`glances`
+
+### Handlers
+
+
+
 ## Notable Projects
 
 - another universal package manager,

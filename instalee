@@ -12,17 +12,19 @@ destress() { echo "[2m$1[0m" >&2; }
 
 # Get the content of a file or the output of its execution
 getcontent() {
-	if test -z "$noexec" && test -x "$1"
-	then "$1"
-	else cat "$1"
-	fi
+	for arg; do
+		if test -z "$noexec" && test -x "$arg"
+		then "$arg"
+		else cat "$arg"
+		fi
+	done
 }
 
 # Get available package entries for given package
 getentries() {
 	cat "$handlersfile" | while read handler
-	do find "$dir_packages/$1/" -depth -type f -name "$handler*" 2>/dev/null | tac
-	done
+		do find "$dir_packages/$1/" -depth -type f -name "$handler*" 2>/dev/null | tac
+		done
 }
 
 # Install a package by name
@@ -142,9 +144,10 @@ installdefault() {
 }
 
 runinstalee() {
-	local groupfile="$dir_home/groups/$1"
-	if test -f "$groupfile"
-	then for package in $(getcontent "$groupfile")
+	local groupfiles=$(find "$dir_home/groups/$1" -type f 2>/dev/null)
+	if test -n "$groupfiles"
+	then
+		for package in $(getcontent $groupfiles)
 		do runinstalee "$package" || installdefault "$package"
 		done
 	else installpkg "$1" || { test "$default" && installdefault "$1"; }

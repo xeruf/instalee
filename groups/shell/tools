@@ -9,8 +9,8 @@ locate
 diffr
 tldr
 kitty
-timg
-exa
 strace
+timg
 tmux
-glances
+jq
+dd
