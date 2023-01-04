@@ -142,10 +142,10 @@ and ideas that need to be fleshed out.
   (at least for `pacman`)
 - Log Installs for reuse
 
-### Random TODOs
+### TODOs
+- Somehow installing doom emacs has a dependency tree resolution issue
 - Debug corner cases
 - Handler preparation - update repos and cache last update time in /tmp
-- Run file in tempdir by default?
 - Handler for downloaded scripts (e.g. passff-host, funkwhale)
 - Enable services after install, e.g. syncthing and docker
 
@@ -205,7 +205,7 @@ but the details still need to be fleshed out.
 
 ### Handlers
 
-
+...
 
 ## Notable Projects
 
