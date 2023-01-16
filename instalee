@@ -3,7 +3,16 @@
 ## DEFINITIONS
 name="$(basename "$0")"
 self="$(realpath "$0")"
-export dir_home="$(dirname $(find "$INSTALEE_HOME" "${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$(realpath "$(dirname "$0")")" "$PWD" -maxdepth 1 -name "handlers.available*" 2>/dev/null | head -1))"
+
+globalconfigdir=/etc/xdg
+case "$XDG_CONFIG_DIRS" in
+	(""|*$configdir*);;
+	(*) globalconfigdir=$(echo $XDG_CONFIG_DIRS | cut -d: -f1);;
+esac
+
+export dir_home="$(dirname $(find "$INSTALEE_HOME" \
+	"${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$globalconfigdir/instalee" "$(realpath "$(dirname "$0")")" "$PWD" \
+	-maxdepth 1 -name "handlers.available*" 2>/dev/null | head -1))"
 handlersfile="$dir_home/handlers.available"
 dir_packages="$dir_home/packages"
 
@@ -165,7 +174,7 @@ then copy="$(find "$dir_home" -name "handlers.available.*" -exec sh -c "echo {} 
 		}
 fi
 
-chmod +rx "$dir_home/handlers" -R
+chmod +rx "$dir_home/handlers" -R 2>/dev/null
 
 execdir=/tmp/instalee.$(date +%s)
 mkdir -p $execdir
