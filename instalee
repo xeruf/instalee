@@ -46,7 +46,7 @@ installpkg() {
 		local pkghandlers="$(find "$dir_package" -type f -printf "%f\n" 2>/dev/null)"
 		for handler in $pkghandlers
 		do installpkg --quiet "$handler" &&
-				echo "$handler" >>"$pkghandlers" &&
+				echo "$handler" >>"$handlersfile" &&
 				package_available_entries=$(getentries "$1") &&
 				break
 		done
