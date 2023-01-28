@@ -16,8 +16,8 @@ export dir_home="$(dirname $(find "$INSTALEE_HOME" \
 handlersfile="$dir_home/handlers.available"
 dir_packages="$dir_home/packages"
 
-highlight() { echo "[4m[1m$1[0m" >&2; }
-destress() { echo "[2m$1[0m" >&2; }
+highlight() { echo $2 "[4m[1m$1[0m" >&2; }
+destress() { echo $2 "[2m$1[0m" >&2; }
 
 # Get the content of a file or the output of its execution
 getcontent() {
@@ -77,12 +77,16 @@ installpkg() {
 			local install
 			args="$(getcontent "$pkg_entry")"
 			args="${args:-$1}"
-			install="$(find "$handler" -name "install$ext" | head -1)"
-			destress " $install $args"
-			pkg_entry="$install $args"
+			installhandler="$(find "$handler" -name "install$ext")"
+			if test -n "$installhandler"
+			then pkg_entry="$installhandler $args"
+			else $(find "$handler" -name "${ext#_}") $args
+				pkg_entry="$(find "$handler" -name "install") $1"
+			fi
 		else
-			destress " running unhandled $pkg_entry"
+			destress " running unhandled" -n
 		fi
+		destress " $pkg_entry"
 		$pkg_entry
 		)
 		set +e
@@ -135,7 +139,8 @@ case "$1" in
 			while printf "Handler? (Ctrl-C or Ctrl-D to exit, / to list all) " && read handler
 			do
 				case "$handler" in
-				(/*) find "$dir_packages" "$dir_home/handlers" -type f -not -name "depends*" -printf "%f\n" | sort | uniq | paste -s -d ' ';;
+				(/*) find "$dir_packages" "$dir_home/handlers" -type f -not -name "depends*" -printf "%f\n" |
+					sort | uniq | paste -s -d ' ';;
 				(*) ${EDITOR:-vi} "$dir/$handler";;
 				esac
 			done
@@ -163,9 +168,8 @@ runinstalee() {
 	fi
 }
 
-# TODO Manjaro
 if ! test -f "$handlersfile"
-then copy="$(find "$dir_home" -name "handlers.available.*" -exec sh -c "echo {} | rev | cut -d'.' -f1 | rev | xargs -i% expr $(cat /etc/os-release | grep '^ID=' | cut -d= -f2 | grep . || lsb_release -s -i | tr 'A-Z' 'a-z') : % >/dev/null" \; -a -print)" &&
+then copy=$(ls $({ cat /etc/os-release | grep -E '^ID(_LIKE)?=' | cut -d= -f2 | grep . || lsb_release -s -i | tr 'A-Z' 'a-z'; } | sed 's/^/handlers.available./' | paste -d' ' -s) 2>/dev/null | head -1) &&
 		test -n "$copy" &&
 		echo "Bootstrapping available handlers from $copy" &&
 		cp "$copy" "$handlersfile" || {
