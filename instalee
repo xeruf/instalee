@@ -170,7 +170,11 @@ runinstalee() {
 
 if ! test -f "$handlersfile"
 then
-	copy="$(case "$(uname)" in (MINGW64*) echo "$dir_home/handlers.available.windows";; (*) find "$dir_home" -name "handlers.available.*" -exec sh -c "echo {} | rev | cut -d'.' -f1 | rev | xargs -i% expr $(lsb_release -s -i | tr 'A-Z' 'a-z' || cat /etc/os-release | grep '^ID=' | cut -d= -f2) : % >/dev/null" \; -a -print;; esac)" &&
+	copy="$(case "$(uname)" in
+			(MINGW64*) echo "$dir_home/handlers.available.windows";;
+			(*) ls $({ cat /etc/os-release | grep -E '^ID(_LIKE)?=' | cut -d= -f2 | grep . || lsb_release -s -i | tr 'A-Z' 'a-z'; } |
+					sed 's/^/handlers.available./' | paste -d' ' -s) 2>/dev/null | head -1;;
+			esac)" &&
 		test -n "$copy" &&
 		echo "Bootstrapping available handlers from $copy" &&
 		cp "$copy" "$handlersfile" || {
