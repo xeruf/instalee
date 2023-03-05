@@ -1,0 +1,10 @@
+#!/bin/sh -e
+{
+sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https
+curl --tlsv1.2 -sSLf 'https://dl.cloudsmith.io/public/caddy/xcaddy/gpg.key' |
+	sudo gpg --dearmor --yes -o /usr/share/keyrings/caddy-xcaddy-archive-keyring.gpg
+curl --tlsv1.2 -sSLf 'https://dl.cloudsmith.io/public/caddy/xcaddy/debian.deb.txt' |
+	sudo tee /etc/apt/sources.list.d/caddy-xcaddy.list
+sudo apt-get update
+} >&2
+echo xcaddy
