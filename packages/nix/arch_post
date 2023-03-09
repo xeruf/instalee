@@ -1,9 +1,0 @@
-#!/bin/sh -e
-# See https://wiki.archlinux.org/title/Nix
-sudo usermod -aG nix-users $USER
-nix-env --install
-nix-channel --add https://nixos.org/channels/nixpkgs-unstable
-nix-channel --update
-test -f /etc/nix/nix.conf || echo "max-jobs = auto
-trusted-users = root $USER" | sudo dd of=/etc/nix/nix.conf status=none
-sudo systemctl enable --now nix-daemon

@@ -6,7 +6,7 @@ self="$(realpath "$0")"
 
 globalconfigdir=/etc/xdg
 case "$XDG_CONFIG_DIRS" in
-	(""|*$configdir*);;
+	(""|*$globalconfigdir*);;
 	(*) globalconfigdir=$(echo $XDG_CONFIG_DIRS | cut -d: -f1);;
 esac
 
@@ -88,6 +88,7 @@ installpkg() {
 		fi
 		destress " $pkg_entry"
 		$pkg_entry
+		find ${dir_package} -name "post" -o -name "post_${base}" -exec {} \; | sed 's/^/ /'
 		)
 		set +e
 		break
