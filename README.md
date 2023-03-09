@@ -199,9 +199,20 @@ but the details still need to be fleshed out.
 
 ### Groups
 
+#### [./groups/shell](shell)
+
 - shell/basics: without these a linux machine is hardly usable
 - shell/tools: without these, a linux computer is not productively usable for me
 - shell/enhancements: replacements for commonly used, dated tools, such as `ls`->`exa` and `top`->`glances`
+
+#### [./groups/arch](arch)
+
+- tools: utilities required for my dotfiles and daily use
+- base: opinionated (slightly bloated) base system
+- full: normal install
+- all: every package I use somewhat regularly
+- portable: base but with packages for installations on removable media
+
 
 ### Handlers
 

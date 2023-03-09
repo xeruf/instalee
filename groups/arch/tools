@@ -1,9 +1,8 @@
+pacman-static
 shell/tools
 fd
-hunt
 zsh-completions
 python-pynvim
-unrar
 man-pages
 zsh-doc
 base-devel
