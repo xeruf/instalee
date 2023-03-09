@@ -1,6 +1,5 @@
 shell/tools
 fd
-ripgrep
 hunt
 zsh-completions
 python-pynvim

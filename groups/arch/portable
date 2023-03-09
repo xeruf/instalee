@@ -1,3 +1,6 @@
 arch/base
+signal
+chordpro
+lilypond
 intel-ucode
 amd-ucode

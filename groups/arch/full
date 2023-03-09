@@ -2,13 +2,11 @@ arch/base
 composing
 media/mix
 media/video
+media/img
 dev
-
-osm
+print
 mount
 forensics
 
-telegram
 lemonade
 caddy
-samba

@@ -1,6 +1,6 @@
 nmap
 bind
-libguestfs
+tor
 testdisk
 recuva
 sandboxie
