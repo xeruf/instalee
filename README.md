@@ -144,7 +144,7 @@ and ideas that need to be fleshed out.
 
 ### TODOs
 - Somehow installing doom emacs has a dependency tree resolution issue
-- Debug corner cases
+- Debug corner cases: Not working on Windows when run as Admin
 - Handler preparation - update repos and cache last update time in /tmp
 - Handler for downloaded scripts (e.g. passff-host, funkwhale)
 - Enable services after install, e.g. syncthing and docker

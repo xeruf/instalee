@@ -2,7 +2,8 @@
 # Inspired by https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=udefrag
 name="ultradefrag-5.0.0AB.8"
 zip="$name.zip"
-wget --no-verbose "http://jp-andre.pagesperso-orange.fr/$zip"
+#wget --no-verbose "http://jp-andre.pagesperso-orange.fr/$zip"
+wget --no-verbose https://web.archive.org/web/20220418235325if_/https://jp-andre.pagesperso-orange.fr/ultradefrag-5.0.0AB.8.zip
 unzip "$zip"
 cd "$name/src"
 make
