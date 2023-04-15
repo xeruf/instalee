@@ -38,9 +38,24 @@ and configure it yourself.
 On Arch you can install the script to `/usr/bin` 
 and the man-page with the `instalee-git` AUR package.
 
+#### Windows
+
+Online install for Windows:
+
+Run this in an administrative powershell:
+``` powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+choco feature enable -n allowGlobalConfirmation
+choco install git
+Start-Process -Wait "C:\Program Files\Git\git-bash.exe" -Verb runAs -ArgumentList "-c 'git clone https://github.com/xeruf/instalee && cd instalee && ./instalee win/work; sleep 10 || bash'"  -OR
+  Start-Process -Wait "C:\ProgramData\chocolatey\lib\git\git-bash.exe" -Verb runAs -ArgumentList "-c 'git clone https://github.com/xeruf/instalee && cd instalee && ./instalee win/work; sleep 10 || bash'" 
+```
+See https://chocolatey.org/install#install-step2
+
 An install helper for Windows,
 that prepares chocolatey either on- and offline
 and installs git bash, is in the works.
+See [i.ps1](./i.ps1).
 
 ### Configuration
 
