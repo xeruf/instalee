@@ -24,14 +24,14 @@ getcontent() {
 	for arg; do
 		if test -z "$noexec" && test -x "$arg"
 		then "$arg"
-		else cat "$arg"
+		else cat "$arg" | tr -d '\r'
 		fi
 	done
 }
 
 # Get available package entries for given package
 getentries() {
-	cat "$handlersfile" | while read handler
+	cat "$handlersfile" | tr -d '\r' | while read handler
 		do find "$dir_packages/$1/" -depth -type f -name "$handler*" 2>/dev/null | tac
 		done
 }
