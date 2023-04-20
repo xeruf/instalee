@@ -47,8 +47,7 @@ Run this in an administrative powershell:
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 choco feature enable -n allowGlobalConfirmation
 choco install git
-Start-Process -Wait "C:\Program Files\Git\git-bash.exe" -Verb runAs -ArgumentList "-c 'git clone https://github.com/xeruf/instalee && cd instalee && ./instalee win/work; sleep 10 || bash'"  -OR
-  Start-Process -Wait "C:\ProgramData\chocolatey\lib\git\git-bash.exe" -Verb runAs -ArgumentList "-c 'git clone https://github.com/xeruf/instalee && cd instalee && ./instalee win/work; sleep 10 || bash'" 
+Start-Process -Wait "C:\Program Files\Git\git-bash.exe" -Verb runAs -ArgumentList "-c 'git clone https://github.com/xeruf/instalee; cd instalee && git pull && ./instalee win/work; sleep 10 || bash'"
 ```
 See https://chocolatey.org/install#install-step2
 
