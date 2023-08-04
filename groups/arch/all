@@ -2,6 +2,7 @@ arch/full
 flash
 game
 
+context
 osm
 zulip
 signal
