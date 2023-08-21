@@ -35,8 +35,8 @@ usually imported from the original project site.
 
 Alternatively, you can download just the [`instalee`](./instalee) script
 and configure it yourself.
-On Arch you can install the script to `/usr/bin` 
-and the man-page with the `instalee-git` AUR package.
+On Arch you can install the `instalee-git` AUR package
+to get the man-page and copy the script into `/usr/bin`.
 
 #### Windows
 
@@ -220,7 +220,7 @@ but the details still need to be fleshed out.
 #### [./groups/shell](shell)
 
 - shell/basics: without these a linux machine is hardly usable
-- shell/tools: without these, a linux computer is not productively usable for me
+- shell/tools: without these a linux computer is not productively usable for me
 - shell/enhancements: replacements for commonly used, dated tools, such as `ls`->`exa` and `top`->`glances`
 
 #### [./groups/arch](arch)
