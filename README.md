@@ -148,7 +148,7 @@ A loose list of undocumented features
 and ideas that need to be fleshed out.
 
 - Cross-handler dependencies (e.g. logcli script needs go)
-  -> currently implemented with `HANDLER_depends` files
+  -> currently implemented with `depends_HANDLER` files
 
 ### Planned
 - detection mechanism for handlers and features

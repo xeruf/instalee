@@ -1,0 +1,2 @@
+#!/bin/sh
+bash <(curl -fsSL https://github.com/firezone/firezone/raw/legacy/scripts/install.sh)

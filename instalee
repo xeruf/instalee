@@ -140,7 +140,8 @@ case "$1" in
 			while printf "Handler? (Ctrl-C or Ctrl-D to exit, / to list all) " && read handler
 			do
 				case "$handler" in
-				(/*) find "$dir_packages" "$dir_home/handlers" -type f -not -name "depends*" -printf "%f\n" |
+				(/*) find "$dir_packages" "$dir_home/handlers" -type f -printf "%f\n" |
+					grep -vE '(_|\.)' |
 					sort | uniq | paste -s -d ' ';;
 				(*) ${EDITOR:-vi} "$dir/$handler";;
 				esac
