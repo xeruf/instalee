@@ -40,8 +40,9 @@ getentries() {
 installpkg() {
 	test "$1" = "--quiet" && local quiet=true && shift
 	local dir_package="$dir_packages/$1/"
-	# prefer unsuffixed entries, i.e. sort by length
-	test -d "$dir_package" && local package_available_entries="$(getentries "$1")"
+	# TODO prefer unsuffixed entries, i.e. sort by length
+	local package_available_entries=""
+	test -d "$dir_package" && package_available_entries="$(getentries "$1")"
 	if test -z "$package_available_entries"; then
 		local pkghandlers="$(find "$dir_package" -type f -printf "%f\n" 2>/dev/null)"
 		for handler in $pkghandlers
