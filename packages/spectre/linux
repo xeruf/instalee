@@ -1,0 +1,4 @@
+git clone --recurse-submodules https://gitlab.com/spectre.app/cli
+cd cli
+./build
+./install
