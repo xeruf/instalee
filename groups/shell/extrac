@@ -1,0 +1,3 @@
+# Dependencies for my pve backup extraction script
+vma
+lzop

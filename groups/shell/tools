@@ -1,6 +1,5 @@
 shell/basics
-tree
-wget
+zsh
 texinfo
 fzf
 expect

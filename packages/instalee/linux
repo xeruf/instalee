@@ -1,7 +1,8 @@
 #!/bin/sh -e
 # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=instalee-git
 _pkgname='instalee'
-cd "$(readlink /proc/$(ps -o ppid= $PPID | tr -d ' ')/cwd || $dir_home)"
+cd $(dirname $(dirname $(dirname "$0")))
+#cd "$(readlink /proc/$(ps -o ppid= $PPID | tr -d ' ')/cwd || $dir_home)"
 #cd "$(readlink /proc/$(ps -o ppid= $(ps -o ppid= $PPID) | tr -d ' ')/cwd || $dir_home)"
 usrdir="${pkgdir}/usr/local"
 bin="${usrdir}/bin"

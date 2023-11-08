@@ -1,6 +1,8 @@
-curl
-git
-zsh
+shell/minimal
+man
 bat
 neovim
-man-db
+fd
+bpytop
+tree
+wget

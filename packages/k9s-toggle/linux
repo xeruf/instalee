@@ -1,0 +1,2 @@
+#!/bin/sh
+install -D $(dirname $0)/k9s-toggle.yml ${XDG_CONFIG_HOME:-$HOME/.config}/k9s/plugin.yml

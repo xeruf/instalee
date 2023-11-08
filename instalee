@@ -19,19 +19,24 @@ dir_packages="$dir_home/packages"
 highlight() { echo $2 "[4m[1m$1[0m" >&2; }
 destress() { echo $2 "[2m$1[0m" >&2; }
 
+# Cat a file, filtering out dos line endings and commented lines
+catfile() {
+	cat "$@" | tr -d '\r' | sed '/^#/d'
+}
+
 # Get the content of a file or the output of its execution
 getcontent() {
 	for arg; do
 		if test -z "$noexec" && test -x "$arg"
 		then "$arg"
-		else cat "$arg" | tr -d '\r'
+		else catfile "$arg"
 		fi
 	done
 }
 
 # Get available package entries for given package
 getentries() {
-	cat "$handlersfile" | tr -d '\r' | while read handler
+	catfile "$handlersfile" | while read handler
 		do find "$dir_packages/$1/" -depth -type f -name "$handler*" 2>/dev/null | tac
 		done
 }
