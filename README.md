@@ -131,7 +131,7 @@ flag for manual installation).
 ## Guiding Principles
 
 Instalee closely follows the UNIX philosophy with directory structures and files as configuration.
-The goal is to be as generic as possible to accomodate any kind of setup.
+The goal is to be as generic as possible to accommodate any kind of setup.
 
 However, it should be efficient while generic,
 preventing repetition at every level (DRY).
@@ -139,7 +139,7 @@ preventing repetition at every level (DRY).
 ### What Instalee is not
 - a (central) package repository containing package sources
 - a package manager to inspect or remove packages
-- a tool to upgrade all installed packages from various sources -
+- a tool to upgrade packages installed from diverse sources -
   see `topgrade`
 
 ## Features
@@ -152,9 +152,10 @@ and ideas that need to be fleshed out.
 
 ### Planned
 - detection mechanism for handlers and features
-  (e.g. whether they support batching)
+  (e.g. batch-install support)
 - Ability to use multiple repos, including remote ones
-- Handle missing versions in older os version repos
+- Cope with missing versions in repositories of older OS versions
+  -> version handlers
 
 - helper/hook for adding packages to groups upon install
   (at least for `pacman`)
@@ -243,3 +244,31 @@ but the details still need to be fleshed out.
   https://github.com/teaxyz/cli
 - universal package updater:
   https://github.com/topgrade-rs/topgrade
+
+
+## Windows Issues
+
+https://superuser.com/questions/55809/how-to-run-program-from-command-line-with-elevated-rights
+
+- auto-elevation of choco
+- post-choco-install check if launching git bash works
+- add choco to handlers
+
+Set-Location : Illegales Zeichen im Pfad.
+In K:\instalee\packages\chocolatey\powershell.ps1:24 Zeichen:5
++     Set-Location $Loc.Substring(1,$Loc.Length-1)
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (K:\instalee":String) [Set-Location], ArgumentException
+    + FullyQualifiedErrorId : ItemExistsArgumentError,Microsoft.PowerShell.Commands.SetLocationCommand
+
+Set-Location : Der Pfad "K:\instalee"" kann nicht gefunden werden, da er nicht vorhanden ist.
+In K:\instalee\packages\chocolatey\powershell.ps1:24 Zeichen:5
++     Set-Location $Loc.Substring(1,$Loc.Length-1)
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (K:\instalee":String) [Set-Location], ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand
+
+https://stackoverflow.com/questions/52223872/get-windows-version-from-git-bash
+
+Windows 7: https://dotnet.microsoft.com/en-us/download/dotnet-framework
+-> Unsupported Versions: 4.5
