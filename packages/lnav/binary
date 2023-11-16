@@ -1,0 +1,5 @@
+#!/bin/sh -e
+url=$(curl -s "https://api.github.com/repos/tstack/lnav/releases/latest" | grep -o "http.*linux-musl.zip")
+wget --no-verbose "$url"
+unzip -q "$(basename "$url")"
+echo */lnav
