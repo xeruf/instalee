@@ -1,9 +1,12 @@
 #!/bin/sh -e
 # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=instalee-git
+# Does not copy package repo but links it
 _pkgname='instalee'
 cd $(dirname $(dirname $(dirname "$0")))
 #cd "$(readlink /proc/$(ps -o ppid= $PPID | tr -d ' ')/cwd || $dir_home)"
 #cd "$(readlink /proc/$(ps -o ppid= $(ps -o ppid= $PPID) | tr -d ' ')/cwd || $dir_home)"
+git pull
+
 usrdir="${pkgdir}/usr/local"
 bin="${usrdir}/bin"
 sudo install -D --target-directory "${usrdir}/share/doc/${_pkgname}/" *.md
@@ -13,5 +16,7 @@ sudo install -D --target-directory "$bin" "${_pkgname}"
 pkgver="$({ git describe --long --tags 2>/dev/null || printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"; } | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g' )"
 sudo sed -i "s/r%s[^\"]*\"/version ${pkgver}\"/" "$bin/${_pkgname}"
 
+echo "export INSTALEE_HOME=$PWD" | sudo tee /etc/profile.d/instalee.sh
+echo "Exported HOME directory to /etc/profile.d - re-login for global use to work."
 echo -n "Installed "
 $bin/instalee --version
