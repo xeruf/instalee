@@ -104,8 +104,8 @@ installpkg() {
 ## EXECUTION
 
 version=$(printf "$name r%s.%s%s" "$(git rev-list --count HEAD 2>/dev/null)" "$(git rev-parse --short HEAD 2>/dev/null)" "$(git diff-index HEAD | wc -l | sed 's|^[1-9]|-mod\0|')")
-# TODO getopt
-case "$1" in
+while true
+do case "$1" in
 	(-V|--version|"")
 		printf "$version\nTry '$0 --help' or 'man $name' for usage info\n" >&2
 		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
@@ -122,8 +122,8 @@ case "$1" in
 		action=$1
 		shift
 		case "$action" in
-		(*=group) ${EDITOR:-vi} "$dir_home/groups/$1"; exit $?;;
-		(*=handler)
+		(*group) ${EDITOR:-vi} "$dir_home/groups/$1"; exit $?;;
+		(*handler)
 			file="$dir_home/handlers/$1/install"
 			if ! test -f "$file"; then
 				mkdir -p "$(dirname "$file")"
@@ -155,7 +155,9 @@ case "$1" in
 			exit 0
 		fi
 		;;
+	(*) break;;
 esac
+done
 
 installdefault() {
 	local defaulthandler="$(head -1 "$handlersfile")"
