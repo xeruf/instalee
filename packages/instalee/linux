@@ -17,6 +17,6 @@ pkgver="$({ git describe --long --tags 2>/dev/null || printf "r%s.%s" "$(git rev
 sudo sed -i "s/r%s[^\"]*\"/version ${pkgver}\"/" "$bin/${_pkgname}"
 
 echo "export INSTALEE_HOME=$PWD" | sudo tee /etc/profile.d/instalee.sh
-echo "Exported HOME directory to /etc/profile.d - re-login for global use to work."
+echo "Exported INSTALEE_HOME directory under /etc/profile.d - re-login for global use to work."
 echo -n "Installed "
 $bin/instalee --version
