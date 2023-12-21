@@ -60,6 +60,18 @@ and run `./instalee PACKAGE`.
 An offline version is possible as well 
 but I did not get around to publishing it yet, just ask :)
 
+### (Debian) Linux Server
+
+The classic way I get this onto a Linux server:
+
+```sh
+cd /opt 
+sudo chown --from=:root :sudo . && sudo chmod g+w .
+sudo apt install git
+git clone https://github.com/xeruf/instalee
+instalee/instalee shell/basics
+```
+
 ### Configuration
 
 All configuration is stored in `INSTALEE_HOME` 
