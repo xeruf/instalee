@@ -68,7 +68,7 @@ The classic way I get this onto a Linux server:
 cd /opt 
 sudo chown --from=:root :sudo . && sudo chmod g+w .
 sudo apt install git
-git clone https://github.com/xeruf/instalee
+git clone https://github.com/xeruf/instalee || git -C instalee pull
 instalee/instalee shell/basics
 ```
 

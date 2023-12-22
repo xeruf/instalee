@@ -6,9 +6,14 @@ case "$1" in
 	(http*) wget --no-verbose -O "$loc" "$@";;
 	(*.deb) loc="$1";;
 	(git*) domain="$1"; shift
-		result=$(curl -s "https://api.$domain/repos/$1/$2/releases/latest" | grep -o "http.*${3:-deb}" | awk '{ print length(), $0}' | sort -n | cut -d' ' -f2-)
-		"$0" $(echo "$result" | command grep amd64 | head -1 || echo "$result")
-		exit $?;;
+	       arch=$(uname -m)
+	       case "$arch" in
+	         (x86_64) arch=amd64;;
+	         (aarch64) arch=arm64;;
+	       esac
+	       result=$(curl -s "https://api.$domain/repos/$1/$2/releases/latest" | grep -o "http.*${3:-deb}" | awk '{ print length(), $0}' | sort -n | cut -d' ' -f2-)
+	       "$0" $(echo "$result" | grep $arch | head -1 || echo "$result")
+	       exit $?;;
 esac
 sudo dpkg -i "$loc"
 sudo apt-get -f install

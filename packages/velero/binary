@@ -1,0 +1,11 @@
+#!/bin/sh
+arch=$(uname -m)
+case "$arch" in
+  (x86_64) arch=amd64;;
+  (aarch64) arch=arm64;;
+esac
+
+result=$(curl https://api.github.com/repos/vmware-tanzu/velero/releases/latest | grep -o "http.*.tar.gz" | awk '{ print length(), $0}' | sort -n | cut -d' ' -f2- | grep linux-$arch | head -1)
+wget "$result"
+tar -xvf $(basename "$result")
+echo $(basename "$result")/velero

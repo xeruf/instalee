@@ -1,5 +1,4 @@
 kubectl
 helm
 k9s
-fluxctl
 kubectx
