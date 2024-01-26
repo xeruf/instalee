@@ -1,3 +1,4 @@
 shell/kubernetes
 fluxctl
 velero
+k9s-toggle
