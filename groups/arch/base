@@ -1,6 +1,7 @@
 arch/tools
 shell/all
 
+syslog-ng
 cronie
 syncthing
 doom
