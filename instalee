@@ -19,6 +19,14 @@ dir_packages="$dir_home/packages"
 highlight() { echo $2 "[4m[1m$1[0m" >&2; }
 destress() { echo $2 "[2m$1[0m" >&2; }
 
+listhandlers() {
+	(
+		cd "$dir_home/handlers"
+		find -- * -type f | grep install | sed 's|/install\(_\)\?|\1|'
+		find "$dir_packages" -type f -printf "%f\n" | grep -vE '(depends|post_|\.)'
+	) | sort | uniq
+}
+
 # Cat a file, filtering out dos line endings and commented lines
 catfile() {
 	cat "$@" | tr -d '\r' | sed '/^#/d'
@@ -107,9 +115,14 @@ version=$(printf "$name r%s.%s%s" "$(git rev-list --count HEAD 2>/dev/null)" "$(
 while true
 do case "$1" in
 	(-V|--version|"")
-		printf "$version\nHomedir: $dir_home\nTry '$0 --help' or 'man $name' for usage info\n" >&2
+		printf "$version\nHomedir: $dir_home\nTry '$0 --help' or 'man $name' for usage info\nAvailable handlers: " >&2
+		listhandlers | paste -s -d ' '
 		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
 		exit 0
+		;;
+	(--handlers)
+		listhandlers
+		exit $?
 		;;
 	(-h|--help)
 		man $name 2>/dev/null || man "$dir_home/$name.1"
@@ -146,9 +159,7 @@ do case "$1" in
 			while printf "Handler? (Ctrl-C or Ctrl-D to exit, / to list all) " && read handler
 			do
 				case "$handler" in
-				(/*) find "$dir_packages" "$dir_home/handlers" -type f -printf "%f\n" |
-					grep -vE '(_|\.)' |
-					sort | uniq | paste -s -d ' ';;
+				(/*) listhandlers | paste -s -d ' ';;
 				(*) ${EDITOR:-vi} "$dir/$handler";;
 				esac
 			done
