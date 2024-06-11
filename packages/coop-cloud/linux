@@ -1,3 +1,4 @@
 #!/bin/sh -e
+# https://docs.coopcloud.tech/operators/tutorial/#server-setup
 docker swarm init
 docker network create -d overlay proxy

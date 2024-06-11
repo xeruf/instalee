@@ -5,3 +5,4 @@ case $1 in
 (*.gpg) sudo $curl -o "$2";;
 (*.key) $curl | sudo gpg --dearmor --yes -o "$2";;
 (*) echo 'Unknown key type' >&2; false;;
+esac
