@@ -174,6 +174,7 @@ and ideas that need to be fleshed out.
 - Log Installs for reuse
 
 ### TODOs
+- Homebrew for Mac - partially implemented but resolution not working (e.g. docker automatically installing brew first)
 - Somehow installing doom emacs has a dependency tree resolution issue
 - Debug corner cases: Not working on Windows when run as Admin
 - Handler preparation - update repos and cache last update time in /tmp
@@ -222,7 +223,7 @@ but the details still need to be fleshed out.
     such as `yay` for arch and aur
   + how about `providers/<handler>/<provider>[_<ext>]`? 
     Same duplication issue, now spread out...
-  + underscore extension might be superfluous through that, since `ext` was somewhat a proxy for a proper `provider` configuraion
+  + underscore extension might be superfluous through that, since `ext` was somewhat a proxy for a proper `provider` configuration
 - Use system subdirectories for handlers and groups,
   which are used by default when system is detected
 
