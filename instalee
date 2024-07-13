@@ -193,6 +193,7 @@ if ! test -f "$handlersfile"
 then
 	copy="$(case "$(uname)" in
 			(MINGW64*) echo "$dir_home/handlers.available.windows";;
+			(DARWIN) echo "$dir_home/handlers.available.mac";;
 			(*) ls "$dir_home/$({ cat /etc/os-release | grep -E '^ID(_LIKE)?=' | cut -d= -f2 | grep . || lsb_release -s -i | tr 'A-Z' 'a-z'; } |
 					sed 's/^/handlers.available./' | paste -d' ' -s)" 2>/dev/null | head -1;;
 			esac)" &&
