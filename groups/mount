@@ -4,3 +4,4 @@ android-fs
 android-tools
 aafm-git
 libguestfs
+ifuse
