@@ -163,7 +163,7 @@ and ideas that need to be fleshed out.
   -> currently implemented with `depends_HANDLER` files
 
 ### Planned
-- detection mechanism for handlers and features
+- detection mechanism for handler features
   (e.g. batch-install support)
 - Ability to use multiple repos, including remote ones
 - Cope with missing versions in repositories of older OS versions
@@ -171,9 +171,9 @@ and ideas that need to be fleshed out.
 
 - helper/hook for adding packages to groups upon install
   (at least for `pacman`)
-- Log Installs for reuse
+- log installs for reuse
 
-### TODOs
+### Issues
 - Homebrew for Mac - partially implemented but resolution not working (e.g. docker automatically installing brew first)
 - Somehow installing doom emacs has a dependency tree resolution issue
 - Debug corner cases: Not working on Windows when run as Admin
@@ -181,12 +181,12 @@ and ideas that need to be fleshed out.
 - Handler for downloaded scripts (e.g. passff-host, funkwhale)
 - Enable services after install, e.g. syncthing and docker
 
-#### Windows Flow
+#### Windows Offline Flow
 - Install choco and git offline
 - Run in git bash
 - TODO: Use choco-offline sources
 
-### Flow
+### Flow v2
 This is a revamped concept 
 that would ease setting up new devices with different systems
 by adding a mapping of functions to applications
@@ -246,11 +246,7 @@ but the details still need to be fleshed out.
 - portable: base but with packages for installations on removable media
 
 
-### Handlers
-
-...
-
-## Notable Projects
+## Related Projects
 
 - another universal package manager,
   but without affecting the system:
