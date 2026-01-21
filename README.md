@@ -65,9 +65,10 @@ but I did not get around to publishing it yet, just ask :)
 The classic way I get this onto a Linux server:
 
 ```sh
+sudo=$(which sudo)
 cd /opt 
-sudo chown --from=:root :sudo . && sudo chmod g+w .
-sudo apt install git
+$sudo chown --from=:root :sudo . && $sudo chmod g+w .
+$sudo apt install git
 git clone https://github.com/xeruf/instalee || git -C instalee pull
 instalee/instalee shell/basics
 ```

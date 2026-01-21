@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Install hunspell via Homebrew
+brew install hunspell
+
+# Create spelling directory if it doesn't exist
+mkdir -p ~/Library/Spelling
+
+# Download German dictionary (example from LibreOffice extensions repo)
+curl -L "https://extensions.libreoffice.org/en/extensions/show/german-de-de-dictionary" -o de-de.oxt
+unzip -o de-de.oxt '*.dic' '*.aff' -d ~/Library/Spelling
+
+# Download English US dictionary from openoffice extensions
+curl -L "https://extensions.openoffice.org/en/project/english-dictionaries-apache-openoffice" -o en-us.oxt
+unzip -o en-us.oxt '*.dic' '*.aff' -d ~/Library/Spelling
+
+# Cleanup downloaded files
+rm de-de.oxt en-us.oxt
+
+# Verify dictionaries are installed
+echo "Hunspell dictionary paths:"
+hunspell -D
+
+echo "German and English dictionaries installed to ~/Library/Spelling"
