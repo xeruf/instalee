@@ -117,7 +117,10 @@ installpkg() {
 version=$(printf "$name r%s.%s%s" "$(git rev-list --count HEAD 2>/dev/null)" "$(git rev-parse --short HEAD 2>/dev/null)" "$(git diff-index HEAD 2>/dev/null | wc -l | sed 's|^[1-9]|-mod\0|')")
 while true
 do case "$1" in
-	(-V|--version|"")
+	(-V|--version)
+		printf "$version" >&2
+		;;
+	("")
 		printf "$version\nHomedir: $dir_home\nTry '$0 --help' or 'man $name' for usage info\nAvailable handlers: " >&2
 		listhandlers | paste -s -d ' '
 		# TODO license https://www.gnu.org/prep/standards/html_node/_002d_002dversion.html#g_t_002d_002dversion
