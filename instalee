@@ -13,7 +13,7 @@ case "$XDG_CONFIG_DIRS" in
 esac
 
 export dir_home="$(dirname $(find "$INSTALEE_HOME" \
-	"${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$globalconfigdir/instalee" "$(realpath "$(dirname "$0")")" "$PWD" \
+	"${XDG_CONFIG_HOME:-$HOME/.config}/$name" "$HOME/.$name" "$globalconfigdir/instalee" "/opt/$name" "$(realpath "$(dirname "$0")")" "$PWD" \
 	-maxdepth 1 -name "handlers.available*" 2>/dev/null | head -1))"
 handlersfile="$dir_home/handlers.available"
 dir_packages="$dir_home/packages"

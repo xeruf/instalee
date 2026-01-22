@@ -1,8 +1,10 @@
 #!/bin/sh -e
-sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https
+sudo=$(which sudo)
+$sudo apt-get install -y debian-keyring debian-archive-keyring apt-transport-https
+
 curl="curl --tlsv1.2 -fsSL $1"
 case $1 in
-(*.gpg) sudo $curl -o "$2";;
-(*.key) $curl | sudo gpg --dearmor --yes -o "$2";;
+(*.gpg) $sudo $curl -o "$2";;
+(*.key) $curl | $sudo gpg --dearmor --yes -o "$2";;
 (*) echo 'Unknown key type' >&2; false;;
 esac

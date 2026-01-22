@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo apt-get install --no-install-recommends -y "$@"
+$(which sudo) apt-get install --no-install-recommends --assume-yes "$@"

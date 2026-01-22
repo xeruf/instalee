@@ -1,11 +1,12 @@
 #!/bin/sh -e
+sudo=$(which sudo)
 test "$INSTALEE_VERBOSE" -lt 10 || set -x
 arg=$1
 name="${2:-$(basename "$arg")}"
 location="/usr/local/bin/${name}"
 case "$arg" in
-	(*://*) sudo wget --no-verbose -O "$location" "$arg";;
-	(*) sudo cp -v "$arg" "$location";;
+	(*://*) $sudo wget --no-verbose -O "$location" "$arg";;
+	(*) $sudo cp -v "$arg" "$location";;
 esac
-sudo chmod +x "$location"
+$sudo chmod +x "$location"
 test "$INSTALEE_VERBOSE" -lt 3 || echo "Installed $name to $location"

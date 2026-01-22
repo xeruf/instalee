@@ -15,6 +15,7 @@ case "$1" in
 	       "$0" $(echo "$result" | grep $arch | head -1 || echo "$result")
 	       exit $?;;
 esac
-sudo dpkg -i "$loc"
-sudo apt-get -f install
-sudo rm -v "$loc"
+sudo=$(which sudo)
+$sudo dpkg -i "$loc"
+$sudo apt-get -f install
+$sudo rm -v "$loc"

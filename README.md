@@ -65,6 +65,7 @@ but I did not get around to publishing it yet, just ask :)
 The classic way I get this onto a Linux server:
 
 ```sh
+#!/bin/sh
 sudo=$(which sudo)
 cd /opt 
 $sudo chown --from=:root :sudo . && $sudo chmod g+w .
