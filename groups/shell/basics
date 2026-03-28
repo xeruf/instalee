@@ -6,6 +6,7 @@ fd
 bpytop
 tree
 wget
+sudo
 
 mosh
 rsync
