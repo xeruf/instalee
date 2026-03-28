@@ -104,17 +104,23 @@ See the [man page](instalee.1) for more details.
 
 `instalee <target>`
 
-A _target_ may either be a _package_ or a _group_.
+A _target_ may either be a _package_ or a _group_,
+which can either be a custom file or from the repository.
 Instalee first checks for a `groups/<target>` file.
 A _group_ is a newline-separated list of packages to install,
 which instalee then resolves individually.
 One difference here is that it will try the first handler for the package
 if it has no associated definition.
 
+When an argument is a file path, 
+instalee reads it as a newline-separated list of targets and installs them in order.
+This uses the same comment filtering and executable-file behavior as groups.
+Prefix a target with `group/` or `groups/` to only resolve it from the `groups/` directory.
+
 When there is no corresponding _group_,
 instalee searches for the first available _handler_
 with a corresponding entry at `packages/<target>/<handler>`,
-piping it into the _handler_ to install the package.
+piping the entry into the _handler_ to install the package.
 The package definition may be an empty file
 (thus simply indicating the availability of a package for a _handler_),
 in which case the name of the package is passed to the _handler_.

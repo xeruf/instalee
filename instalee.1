@@ -9,11 +9,11 @@ instalee - Unix-style universal package installation wrapper
 
 .SH SYNOPSIS
 
-.B instalee <packagename>...
+.B instalee <target>...
 - install packages
 .br
 .B instalee <-a|--add> [packagename] [handler] [<content>]
-- add new packages
+- add new package entries
 
 .SH DESCRIPTION
 
@@ -25,8 +25,9 @@ Use it to set up servers as well as temporary and permanent computers to your ne
 .SH OPTIONS
 
 .TP
-<packagename>
-The package. Corresponds to a directory in \fIpackages\fP.
+<target>
+A package, group, or a file containing a newline-separated list of targets.
+Prefix a target with \fIgroup/\fP or \fIgroups/\fP to only resolve it from \fIgroups\fP.
 .TP
 -a|--add
 Add a package entry to the repo. Will prompt for missing arguments.
