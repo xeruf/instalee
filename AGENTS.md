@@ -13,7 +13,17 @@ There is no compiled build step. Typical contributor commands are:
 - `sh -n instalee handlers/*/install util/setup-repo.sh`: syntax-check core scripts before sending changes.
 
 ## Coding Style & Naming Conventions
-Write portable POSIX shell, not Bash-specific code, unless a file already targets another shell or platform such as PowerShell. Follow the existing style: tabs for shell indentation, short functions, lowercase variable names, and terse comments only where behavior is non-obvious. Name handler scripts by action (`install`, `install_deb`, `install_pipx`) and package entries by handler name (`packages/<pkg>/apt`, `packages/<pkg>/aur`). Keep group files newline-separated and comment lines with `#`.
+Write portable POSIX shell, not Bash-specific code,
+unless a file already targets another shell or platform such as PowerShell.
+Follow the existing style:
+tabs for shell indentation,
+short functions,
+lowercase variable names,
+and terse comments only where behavior is non-obvious.
+Use semantic line breaks in Markdown documentation.
+Name handler scripts by action (`install`, `install_deb`, `install_pipx`)
+and package entries by handler name (`packages/<pkg>/apt`, `packages/<pkg>/aur`).
+Keep group files newline-separated and comment lines with `#`.
 
 ## Testing Guidelines
 This repository does not currently include an automated test suite. Validate changes with targeted dry runs and syntax checks. For package or group edits, run the smallest relevant command, for example `INSTALEE_HOME=$PWD ./instalee -x group/dev/node` or `INSTALEE_HOME=$PWD ./instalee -x fd`. If you change handler behavior, exercise at least one real package path that uses that handler and note the platform used.

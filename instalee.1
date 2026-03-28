@@ -1,7 +1,7 @@
 .\" Manpage for instalee - https://git.jfischer.org/xeruf/instalee
 .\" Contact 27jf@pm.me for improvements.
 
-.TH man 1 "22 Nov 2022" "0.1" "instalee man page"
+.TH man 1 "28 Mar 2026" "0.1" "instalee man page"
 
 .SH NAME
 
@@ -18,7 +18,7 @@ instalee - Unix-style universal package installation wrapper
 .SH DESCRIPTION
 
 Instalee provides a generic interface for installing packages.
-It relies on the user configuring it to pers needs, keeping the core logic as simple as possible.
+It relies on user-maintained files and directories instead of hardcoded package-manager logic, keeping the core logic simple.
 
 Use it to set up servers as well as temporary and permanent computers to your needs across operating systems.
 
@@ -26,8 +26,8 @@ Use it to set up servers as well as temporary and permanent computers to your ne
 
 .TP
 <target>
-A package, group, or a file containing a newline-separated list of targets.
-Prefix a target with \fIgroup/\fP or \fIgroups/\fP to only resolve it from \fIgroups\fP.
+A package, a group, or a file containing a newline-separated list of targets.
+Prefix a target with \fIgroup/\fP or \fIgroups/\fP to resolve it only from \fIgroups\fP and skip package fallback.
 .TP
 -a|--add
 Add a package entry to the repo. Will prompt for missing arguments.
