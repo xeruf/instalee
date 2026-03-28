@@ -119,6 +119,7 @@ while true
 do case "$1" in
 	(-V|--version)
 		printf "$version" >&2
+		exit 0
 		;;
 	("")
 		printf "$version\nHomedir: $dir_home\nTry '$0 --help' or 'man $name' for usage info\nAvailable handlers: " >&2
